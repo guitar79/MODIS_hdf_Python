@@ -106,7 +106,6 @@ def getFullnameListOfallFiles(dirName):
             allFiles = allFiles + getFullnameListOfallFiles(fullPath)
         else:
             allFiles.append(fullPath)
-                
     return allFiles
 
 

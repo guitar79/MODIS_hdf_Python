@@ -13,7 +13,6 @@ conda install -c conda-forge pyhdf
 
 runfile('./classify_MODIS_hdf_MP-01.py', 'daily 2011', wdir='./KOSC_MODIS_SST_Python/')
 
-
 len(npy_data[795,183])
 np.mean(npy_data[795,183])
 
