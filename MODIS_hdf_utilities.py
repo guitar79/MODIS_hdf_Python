@@ -75,6 +75,18 @@ def fullname_to_datetime_for_KOSC_MODIS_SST(fullname):
     filename_dt = datetime(int(fileinfo[-5]), int(fileinfo[-4][:2]), int(fileinfo[-4][2:]), int(fileinfo[-3][:2]), int(fileinfo[-3][2:]))
     return filename_dt
 
+def fullname_to_datetime_for_KOSC_AVHRR_SST_asc(fullname):
+    ############################################################
+    #for modis hdf file, filename = '../folder/MYDOCT.2018.0724.0515.aqua-1.hdf'
+    #
+    from datetime import datetime
+    
+    fullname_info = fullname.split('/')
+    fileinfo = fullname_info[-1].split('.')
+    filename_dt = datetime(int(fileinfo[0]), int(fileinfo[1][:2]), int(fileinfo[1][2:]), int(fileinfo[2][:2]), int(fileinfo[2][2:]))
+    return filename_dt
+
+
 
 def npy_filename_to_fileinfo(fullname):
     ############################################################

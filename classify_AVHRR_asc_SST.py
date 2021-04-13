@@ -39,9 +39,9 @@ import numpy as np
 import os
 import sys
 from sys import argv # input option
-import MODIS_hdf_utility
+import MODIS_hdf_utilities
 
-
+'''
 print("argv: {}".format(argv))
 
 if len(argv) < 4 :
@@ -56,13 +56,17 @@ elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly' :
 else :
     print("Please input L3_perid and year \n ex) aaa.py daily 0.1 2016")
     sys.exit()
+'''
+L3_perid = 'daily'
+resolution = 0.5
+yr = 2015
     
 # Set Datafield name
-DATAFIELD_NAME = "AVHRRSST"
+DATAFIELD_NAME = "AVHRR_SST"
 
 #Set lon, lat, resolution
 Llon, Rlon = 110, 150
-Slat, Nlat = 10, 60
+Slat, Nlat = 15, 55
 
 #L3_perid, resolution, yr = "daily", 0.1, 2019
 
@@ -119,8 +123,8 @@ for year in years:
 fullnames = sorted(glob(os.path.join(base_dir_name, '*.asc')))
 
 fullnames_dt = []
-for fullname in fullnames :
-    fullnames_dt.append(MODIS_hdf_utility.fullname_to_datetime_for_AVHRRASC(fullname))
+for fullname in fullnames[:10] :
+    fullnames_dt.append(MODIS_hdf_utilities.fullname_to_datetime_for_AVHRRASC(fullname))
 
 import pandas as pd 
 
@@ -167,7 +171,7 @@ for proc_date in proc_dates[:]:
             # make array_data
             print("{0}-{1} Start making grid arrays...\n".\
                   format(proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d')))
-            array_data = MODIS_hdf_utility.make_grid_array(Llon, Rlon, Slat, Nlat, resolution)
+            array_data = MODIS_hdf_utilities.make_grid_array(Llon, Rlon, Slat, Nlat, resolution)
             print('Grid arrays are created...........\n')
         
             total_data_cnt = 0
@@ -203,7 +207,7 @@ for proc_date in proc_dates[:]:
                     df_AVHRR_sst["lat_cood"] = (((Nlat-df_AVHRR_sst["latitude"])/resolution*100)//100)
                     df_AVHRR_sst["lon_cood"] = df_AVHRR_sst.lon_cood.astype("int16")
                     df_AVHRR_sst["lat_cood"] = df_AVHRR_sst.lat_cood.astype("int16")
-                    MODIS_hdf_utility.draw_histogram_AVHRR_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME)
+                    MODIS_hdf_utilities.draw_histogram_AVHRR_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME)
                     
                     data_cnt = 0
                     NaN_cnt = 0
@@ -244,7 +248,7 @@ for proc_date in proc_dates[:]:
                 f.write(processing_log)
 
             print('#'*60)
-            MODIS_hdf_utility.write_log(log_file, \
+            MODIS_hdf_utilities.write_log(log_file, \
                 '{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8} files are is created.'\
                 .format(save_dir_name, DATAFIELD_NAME, \
                 proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'), \
