@@ -86,7 +86,64 @@ def fullname_to_datetime_for_KOSC_AVHRR_SST_asc(fullname):
     filename_dt = datetime(int(fileinfo[0]), int(fileinfo[1][:2]), int(fileinfo[1][2:]), int(fileinfo[2][:2]), int(fileinfo[2][2:]))
     return filename_dt
 
+def draw_histogram(hdf_value, longitude, latitude, save_dir_name, fullname, DATAFIELD_NAME):
+    fullname_el = fullname.split("/")
+    import matplotlib.pyplot as plt
+    import numpy as np
+    plt.figure(figsize=(12, 8))
+    plt.title("Histogram of {0}: \n{1}\nmean : {2:.02f}, max: {3:.02f}, min: {4:.02f}\n\
+              longigude : {5:.02f}~{6:.02f}, latitude: {7:.02f}~{8:.02f}".format(DATAFIELD_NAME, fullname,\
+                                      np.nanmean(hdf_value), np.nanmax(hdf_value), np.nanmin(hdf_value),\
+                                      np.nanmin(longitude), np.nanmax(longitude),\
+                                      np.nanmin(latitude), np.nanmax(latitude)), fontsize=9)
+    plt.hist(hdf_value)
+    plt.grid(True)
 
+    #plt.savefig("{}_{}_hist.png".format(fullname[:-4], DATAFIELD_NAME))
+    #print("{}_{}_hist.png is created...".format(fullname[:-4], DATAFIELD_NAME))
+    plt.savefig("{0}{1}_{2}_hist.png"\
+        .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+    print("{0}{1}_{2}_hist.png is created..."\
+        .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+    plt.close()
+    return None  
+
+def draw_histogram_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME):
+    fullname_el = fullname.split("/")
+    import matplotlib.pyplot as plt
+    import numpy as np
+    plt.figure(figsize=(12, 8))
+    plt.title("Histogram of {0}: \n{1}\nmean : {2:.02f}, max: {3:.02f}, min: {4:.02f}\n\
+              longigude : {5:.02f}~{6:.02f}, latitude: {7:.02f}~{8:.02f}".format(DATAFIELD_NAME, fullname,\
+                                      np.nanmean(df_AVHRR_sst["sst"]), np.nanmax(df_AVHRR_sst["sst"]), np.nanmin(df_AVHRR_sst["sst"]),\
+                                      np.nanmin(df_AVHRR_sst["longitude"]), np.nanmax(df_AVHRR_sst["longitude"]),\
+                                      np.nanmin(df_AVHRR_sst["latitude"]), np.nanmax(df_AVHRR_sst["latitude"])), fontsize=9)
+    plt.hist(df_AVHRR_sst["sst"])
+    plt.grid(True)
+
+    return plt
+
+def draw_histogram_AVHRR_SST_asc1(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME):
+    fullname_el = fullname.split("/")
+    import matplotlib.pyplot as plt
+    import numpy as np
+    plt.figure(figsize=(12, 8))
+    plt.title("Histogram of {0}: \n{1}\nmean : {2:.02f}, max: {3:.02f}, min: {4:.02f}\n\
+              longigude : {5:.02f}~{6:.02f}, latitude: {7:.02f}~{8:.02f}".format(DATAFIELD_NAME, fullname,\
+                                      np.nanmean(df_AVHRR_sst["sst"]), np.nanmax(df_AVHRR_sst["sst"]), np.nanmin(df_AVHRR_sst["sst"]),\
+                                      np.nanmin(df_AVHRR_sst["longitude"]), np.nanmax(df_AVHRR_sst["longitude"]),\
+                                      np.nanmin(df_AVHRR_sst["latitude"]), np.nanmax(df_AVHRR_sst["latitude"])), fontsize=9)
+    plt.hist(df_AVHRR_sst["sst"])
+    plt.grid(True)
+
+    #plt.savefig("{}_{}_hist.png".format(fullname[:-4], DATAFIELD_NAME))
+    #print("{}_{}_hist.png is created...".format(fullname[:-4], DATAFIELD_NAME))
+    plt.savefig("{0}{1}_{2}_hist.png"\
+        .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+    print("{0}{1}_{2}_hist.png is created..."\
+        .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+    plt.close()
+    return None      
 
 def npy_filename_to_fileinfo(fullname):
     ############################################################

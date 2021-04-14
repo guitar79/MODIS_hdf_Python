@@ -123,8 +123,8 @@ for year in years:
 fullnames = sorted(glob(os.path.join(base_dir_name, '*.asc')))
 
 fullnames_dt = []
-for fullname in fullnames[:10] :
-    fullnames_dt.append(MODIS_hdf_utilities.fullname_to_datetime_for_AVHRRASC(fullname))
+for fullname in fullnames :
+    fullnames_dt.append(MODIS_hdf_utilities.fullname_to_datetime_for_KOSC_AVHRR_SST_asc(fullname))
 
 import pandas as pd 
 
@@ -207,7 +207,20 @@ for proc_date in proc_dates[:]:
                     df_AVHRR_sst["lat_cood"] = (((Nlat-df_AVHRR_sst["latitude"])/resolution*100)//100)
                     df_AVHRR_sst["lon_cood"] = df_AVHRR_sst.lon_cood.astype("int16")
                     df_AVHRR_sst["lat_cood"] = df_AVHRR_sst.lat_cood.astype("int16")
-                    MODIS_hdf_utilities.draw_histogram_AVHRR_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME)
+                    
+                    if os.path.exists("{0}{1}_{2}_hist.png"\
+                        .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
+            
+                        print("{0}{1}_{2}_hist.png is already exist..."\
+                              .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                    else : 
+                        plt_hist = MODIS_hdf_utilities.draw_histogram_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME)
+                        
+                        plt_hist.savefig("{0}{1}_{2}_hist.png"\
+                            .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                        print("{0}{1}_{2}_hist.png is created..."\
+                            .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                        plt_hist.close()
                     
                     data_cnt = 0
                     NaN_cnt = 0
