@@ -221,7 +221,19 @@ for proc_date in proc_dates[:]:
                         print("{0}{1}_{2}_hist.png is created..."\
                             .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                         plt_hist.close()
-                    
+                                        if os.path.exists("{0}{1}_{2}_hist.png"\
+                        .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
+            
+                        print("{0}{1}_{2}_hist.png is already exist..."\
+                              .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                    else : 
+                        plt_hist = MODIS_hdf_utilities.draw_histogram_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME)
+                        
+                        plt_hist.savefig("{0}{1}_{2}_hist.png"\
+                            .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                        print("{0}{1}_{2}_hist.png is created..."\
+                            .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                        plt_hist.close()
                     data_cnt = 0
                     NaN_cnt = 0
                     
