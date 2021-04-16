@@ -187,7 +187,7 @@ for proc_date in proc_dates[:]:
                 df_AVHRR_sst = pd.read_table("{}".format(fullname), sep='\t', header=None, index_col=0,
                                    names = ['index', 'latitude', 'longitude', 'sst'],
                                    engine='python')
-                df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.sst == "***"].index)
+                df_AVHRR_sst.loc[df_AVHRR_sst.sst == "***", ['sst']] = np.nan
                 df_AVHRR_sst["sst"] = df_AVHRR_sst.sst.astype("float16")
                 df_AVHRR_sst["longitude"] = df_AVHRR_sst.longitude.astype("float16")
                 df_AVHRR_sst["latitude"] = df_AVHRR_sst.latitude.astype("float16")
@@ -209,7 +209,7 @@ for proc_date in proc_dates[:]:
                     df_AVHRR_sst["lat_cood"] = df_AVHRR_sst.lat_cood.astype("int16")
                     
                     if os.path.exists("{0}{1}_{2}_hist.png"\
-                        .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
+                        .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
             
                         print("{0}{1}_{2}_hist.png is already exist..."\
                               .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
@@ -217,23 +217,25 @@ for proc_date in proc_dates[:]:
                         plt_hist = MODIS_hdf_utilities.draw_histogram_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME)
                         
                         plt_hist.savefig("{0}{1}_{2}_hist.png"\
-                            .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                            .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                         print("{0}{1}_{2}_hist.png is created..."\
-                            .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                            .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                         plt_hist.close()
-                                        if os.path.exists("{0}{1}_{2}_hist.png"\
-                        .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
+                    
+                    if True or os.path.exists("{0}{1}_{2}_plot.png" \
+                         .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) \
+                        :
             
-                        print("{0}{1}_{2}_hist.png is already exist..."\
-                              .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                        print("{0}{1}_{2}_map.png is already exist..."\
+                              .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                     else : 
-                        plt_hist = MODIS_hdf_utilities.draw_histogram_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME)
+                        plt_map = MODIS_hdf_utilities.draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat)
                         
-                        plt_hist.savefig("{0}{1}_{2}_hist.png"\
-                            .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
-                        print("{0}{1}_{2}_hist.png is created..."\
-                            .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
-                        plt_hist.close()
+                        plt_map.savefig("{0}{1}_{2}_map.png"\
+                            .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                        print("{0}{1}_{2}_map.png is created..."\
+                            .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                        plt_map.close()
                     data_cnt = 0
                     NaN_cnt = 0
                     

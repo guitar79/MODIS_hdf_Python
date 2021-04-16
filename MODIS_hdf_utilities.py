@@ -108,6 +108,81 @@ def draw_histogram(hdf_value, longitude, latitude, save_dir_name, fullname, DATA
     plt.close()
     return None  
 
+def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat):
+    
+    import numpy as np
+    from mpl_toolkits.basemap import Basemap
+    import matplotlib.pyplot as plt
+    
+    fullname_el = fullname.split("/")
+        
+    longitude = df_AVHRR_sst['longitude'].to_numpy()
+    #print("longitude: {}".format(longitude))
+    #print("type(longitude) : {}".format(type(longitude)))
+    
+    longitude =  np.array(longitude, dtype=np.float32)
+    #print("type(longitude) : {}".format(type(longitude)))
+    #print("longitude.shape: {}".format(longitude.shape))
+    
+    #longitude = longitude.reshape(width[0]+1, (longitude.shape[0]//(width[0]+1)))
+    longitude = longitude.reshape((longitude.shape[0]//(width[0]+1)), width[0]+1)
+    #print("longitude.shape: {}".format(longitude.shape))
+    #print("type(longitude) : {}".format(type(longitude)))
+    #print("longitude: {}".format(longitude))
+    #print("np.nanmax(longitude): {}".format(np.nanmax(longitude)))
+    #print("np.nanmin(longitude): {}".format(np.nanmin(longitude)))
+    
+    latitude = df_AVHRR_sst['latitude'].to_numpy()
+    latitude = np.array(latitude, dtype=np.float32)
+    #latitude = latitude.reshape(width[0]+1, (latitude.shape[0]//(width[0]+1)))
+    latitude = latitude.reshape((latitude.shape[0]//(width[0]+1)), width[0]+1)
+    print("latitude.shape: {}".format(latitude.shape))
+    print("type(latitude) : {}".format(type(latitude)))
+    print("latitude: {}".format(latitude))
+    print("np.nanmax(latitude): {}".format(np.nanmax(latitude)))
+    print("np.nanmin(latitude): {}".format(np.nanmin(latitude)))
+    
+    sst = df_AVHRR_sst['sst'].to_numpy()
+    sst = np.array(sst, dtype=np.float32)
+    #sst = sst.reshape(width[0]+1, (sst.shape[0]//(width[0]+1)))
+    sst = sst.reshape((sst.shape[0]//(width[0]+1)), width[0]+1)   
+    
+    #Plot data on the map
+    print("="*80)
+    print("Plotting data on the map")
+    
+    Llon, Rlon, Slat, Nlat = 100, 150, 10, 60
+    
+    import numpy as np
+    from mpl_toolkits.basemap import Basemap
+    import matplotlib.pyplot as plt
+    
+    plt.figure(figsize=(10, 10))
+    
+    # sylender map
+    m = Basemap(projection='cyl', resolution='l', \
+                llcrnrlat = Slat, urcrnrlat = Nlat, \
+                llcrnrlon = Llon, urcrnrlon = Rlon)
+    
+    m.drawcoastlines(linewidth=0.25, color='white')
+    m.drawcountries(linewidth=0.25, color='white')
+    m.fillcontinents(color='black', lake_color='black')
+    m.drawmapboundary()
+    
+    m.drawparallels(np.arange(-90., 90., 10.), labels=[1, 0, 0, 0], color='white')
+    m.drawmeridians(np.arange(-180., 181., 15.), labels=[0, 0, 0, 1], color='white')
+    
+    x, y = m(longitude, latitude) # convert to projection map
+    m.pcolormesh(x, y, sst)
+    m.colorbar(fraction=0.0455, pad=0.044, ticks=(np.arange(-5, 40.1, step=5)))
+    
+    plt.title('AVHRR SST', fontsize=20)      
+    
+    plt.savefig("{}_sst.png".format(fullname))
+
+    return plt
+
+
 def draw_histogram_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME):
     fullname_el = fullname.split("/")
     import matplotlib.pyplot as plt
