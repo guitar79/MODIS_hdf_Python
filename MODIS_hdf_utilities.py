@@ -114,27 +114,18 @@ def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME
     from mpl_toolkits.basemap import Basemap
     import matplotlib.pyplot as plt
     
-    fullname_el = fullname.split("/")
-        
+    width = []
+    for i in range(len(df_AVHRR_sst)-1): 
+        #print("index : {}".format(df_AVHRR_sst['latitude'].iloc[i]))
+        if abs(df_AVHRR_sst['latitude'].iloc[i] - df_AVHRR_sst['latitude'].iloc[i+1]) > 0.001 :
+            width.append(i)
+            #print("index : {}".format(i))
+        if i == 10000 : break        
     longitude = df_AVHRR_sst['longitude'].to_numpy()
-    #print("longitude: {}".format(longitude))
-    #print("type(longitude) : {}".format(type(longitude)))
-    
     longitude =  np.array(longitude, dtype=np.float32)
-    #print("type(longitude) : {}".format(type(longitude)))
-    #print("longitude.shape: {}".format(longitude.shape))
-    
-    #longitude = longitude.reshape(width[0]+1, (longitude.shape[0]//(width[0]+1)))
     longitude = longitude.reshape((longitude.shape[0]//(width[0]+1)), width[0]+1)
-    #print("longitude.shape: {}".format(longitude.shape))
-    #print("type(longitude) : {}".format(type(longitude)))
-    #print("longitude: {}".format(longitude))
-    #print("np.nanmax(longitude): {}".format(np.nanmax(longitude)))
-    #print("np.nanmin(longitude): {}".format(np.nanmin(longitude)))
-    
     latitude = df_AVHRR_sst['latitude'].to_numpy()
-    latitude = np.array(latitude, dtype=np.float32)
-    #latitude = latitude.reshape(width[0]+1, (latitude.shape[0]//(width[0]+1)))
+    latitude = np.array(latitude, dtype=np.float32)    
     latitude = latitude.reshape((latitude.shape[0]//(width[0]+1)), width[0]+1)
     print("latitude.shape: {}".format(latitude.shape))
     print("type(latitude) : {}".format(type(latitude)))
@@ -144,7 +135,6 @@ def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME
     
     sst = df_AVHRR_sst['sst'].to_numpy()
     sst = np.array(sst, dtype=np.float32)
-    #sst = sst.reshape(width[0]+1, (sst.shape[0]//(width[0]+1)))
     sst = sst.reshape((sst.shape[0]//(width[0]+1)), width[0]+1)   
     
     #Plot data on the map
@@ -152,10 +142,6 @@ def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME
     print("Plotting data on the map")
     
     Llon, Rlon, Slat, Nlat = 100, 150, 10, 60
-    
-    import numpy as np
-    from mpl_toolkits.basemap import Basemap
-    import matplotlib.pyplot as plt
     
     plt.figure(figsize=(10, 10))
     
