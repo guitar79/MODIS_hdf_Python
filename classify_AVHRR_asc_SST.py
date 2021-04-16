@@ -183,7 +183,7 @@ for proc_date in proc_dates[:]:
             
             for fullname in df_proc["fullname"] : 
                 fullname_el = fullname.split("/")
-                print("Reading hdf file {0}\n".format(fullname))
+                print("Reading ascii file {0}\n".format(fullname))
                 df_AVHRR_sst = pd.read_table("{}".format(fullname), sep='\t', header=None, index_col=0,
                                    names = ['index', 'latitude', 'longitude', 'sst'],
                                    engine='python')
