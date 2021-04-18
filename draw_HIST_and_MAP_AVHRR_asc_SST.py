@@ -65,8 +65,8 @@ yr = 2015
 DATAFIELD_NAME = "AVHRR_SST"
 
 #Set lon, lat, resolution
-Llon, Rlon = 110, 150
-Slat, Nlat = 15, 55
+Llon, Rlon = 115, 145
+Slat, Nlat = 20, 55
 
 #L3_perid, resolution, yr = "daily", 0.1, 2019
 
@@ -138,58 +138,66 @@ df
 
 for fullname in df["fullname"] : 
     fullname_el = fullname.split("/")
-    print("Reading ascii file {0}\n".format(fullname))
-    df_AVHRR_sst = pd.read_table("{}".format(fullname), sep='\t', header=None, index_col=0,
-                       names = ['index', 'latitude', 'longitude', 'sst'],
-                       engine='python')
-    df_AVHRR_sst.loc[df_AVHRR_sst.sst == "***", ['sst']] = np.nan
-    df_AVHRR_sst["sst"] = df_AVHRR_sst.sst.astype("float16")
-    df_AVHRR_sst["longitude"] = df_AVHRR_sst.longitude.astype("float16")
-    df_AVHRR_sst["latitude"] = df_AVHRR_sst.latitude.astype("float16")
-    print("df_AVHRR_sst : {}".format(df_AVHRR_sst))
     
-    #check dimension    
-    if len(df_AVHRR_sst) == 0 :
-        print("There is no sst data...")
+    if (not os.path.exists("{0}{1}_{2}_hist.pdf"\
+            .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)))\
+        or (not os.path.exists("{0}{1}_{2}_map.png" \
+             .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))) :
+    
+        try : 
+            print("Reading ascii file {0}\n".format(fullname))
+            df_AVHRR_sst = pd.read_table("{}".format(fullname), sep='\t', header=None, index_col=0,
+                               names = ['index', 'latitude', 'longitude', 'sst'],
+                               engine='python')
+            df_AVHRR_sst.loc[df_AVHRR_sst.sst == "***", ['sst']] = np.nan
+            df_AVHRR_sst["sst"] = df_AVHRR_sst.sst.astype("float16")
+            df_AVHRR_sst["longitude"] = df_AVHRR_sst.longitude.astype("float16")
+            df_AVHRR_sst["latitude"] = df_AVHRR_sst.latitude.astype("float16")
+            print("df_AVHRR_sst : {}".format(df_AVHRR_sst))
             
-    else :
-        df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude < Llon].index)
-        df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude > Rlon].index)
-        df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude > Nlat].index)
-        df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude < Slat].index)
-        
-        df_AVHRR_sst["lon_cood"] = (((df_AVHRR_sst["longitude"]-Llon)/resolution*100)//100)
-        df_AVHRR_sst["lat_cood"] = (((Nlat-df_AVHRR_sst["latitude"])/resolution*100)//100)
-        df_AVHRR_sst["lon_cood"] = df_AVHRR_sst.lon_cood.astype("int16")
-        df_AVHRR_sst["lat_cood"] = df_AVHRR_sst.lat_cood.astype("int16")
-        
-        if os.path.exists("{0}{1}_{2}_hist.png"\
-            .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
-
-            print("{0}{1}_{2}_hist.png is already exist..."\
-                  .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
-        else : 
-            plt_hist = MODIS_hdf_utilities.draw_histogram_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME)
-            
-            plt_hist.savefig("{0}{1}_{2}_hist.png"\
-                .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
-            print("{0}{1}_{2}_hist.png is created..."\
-                .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
-            plt_hist.close()
-        
-        if os.path.exists("{0}{1}_{2}_plot.png" \
-             .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) \
-            :
-
-            print("{0}{1}_{2}_map.png is already exist..."\
-                  .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
-        else : 
-            plt_map = MODIS_hdf_utilities.draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat)
-            
-            plt_map.savefig("{0}{1}_{2}_map.png"\
-                .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
-            print("{0}{1}_{2}_map.png is created..."\
-                .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
-            plt_map.close()
+            #check dimension    
+            if len(df_AVHRR_sst) == 0 :
+                print("There is no sst data...")
                     
+            else :
+            
+                df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude < Llon].index)
+                df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude > Rlon].index)
+                df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude > Nlat].index)
+                df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude < Slat].index)
+                
+                df_AVHRR_sst["lon_cood"] = (((df_AVHRR_sst["longitude"]-Llon)/resolution*100)//100)
+                df_AVHRR_sst["lat_cood"] = (((Nlat-df_AVHRR_sst["latitude"])/resolution*100)//100)
+                df_AVHRR_sst["lat_cood"] = df_AVHRR_sst.lat_cood.astype("int16")
+                
+                if os.path.exists("{0}{1}_{2}_hist.pdf"\
+                    .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
+                    print("{0}{1}_{2}_hist.pdf is already exist..."\
+                          .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                else : 
+                
+                    plt_hist = MODIS_hdf_utilities.draw_histogram_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME)            
+                    plt_hist.savefig("{0}{1}_{2}_hist.pdf"\
+                        .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                    print("{0}{1}_{2}_hist.pdf is created..."\
+                        .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                    plt_hist.close()
+            
+                if os.path.exists("{0}{1}_{2}_map.png" \
+                     .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
+        
+                    print("{0}{1}_{2}_map.png is already exist..."\
+                          .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                else : 
+                
+                    plt_map = MODIS_hdf_utilities.draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat)
                     
+                    plt_map.savefig("{0}{1}_{2}_map.png"\
+                        .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                    print("{0}{1}_{2}_map.png is created..."\
+                        .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+                    plt_map.close()
+        except Exception as err :
+                print("Something got wrecked : {}".format(err))
+                continue
+            

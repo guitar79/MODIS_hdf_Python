@@ -99,8 +99,6 @@ def draw_histogram(hdf_value, longitude, latitude, save_dir_name, fullname, DATA
     plt.hist(hdf_value)
     plt.grid(True)
 
-    #plt.savefig("{}_{}_hist.png".format(fullname[:-4], DATAFIELD_NAME))
-    #print("{}_{}_hist.png is created...".format(fullname[:-4], DATAFIELD_NAME))
     plt.savefig("{0}{1}_{2}_hist.png"\
         .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
     print("{0}{1}_{2}_hist.png is created..."\
@@ -109,7 +107,7 @@ def draw_histogram(hdf_value, longitude, latitude, save_dir_name, fullname, DATA
     return None  
 
 def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat):
-    
+    fullname_el = fullname.split("/")
     import numpy as np
     from mpl_toolkits.basemap import Basemap
     import matplotlib.pyplot as plt
@@ -141,8 +139,6 @@ def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME
     print("="*80)
     print("Plotting data on the map")
     
-    Llon, Rlon, Slat, Nlat = 100, 150, 10, 60
-    
     plt.figure(figsize=(10, 10))
     
     # sylender map
@@ -159,18 +155,31 @@ def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME
     m.drawmeridians(np.arange(-180., 181., 15.), labels=[0, 0, 0, 1], color='white')
     
     x, y = m(longitude, latitude) # convert to projection map
-    m.pcolormesh(x, y, sst)
+    
+    m.pcolormesh(x, y, sst, vmin=0, vmax=40, cmap='coolwarm')
     m.colorbar(fraction=0.0455, pad=0.044, ticks=(np.arange(-5, 40.1, step=5)))
     
     plt.title('AVHRR SST', fontsize=20)      
     
-    plt.savefig("{}_sst.png".format(fullname))
+    x1, y1 = m(Llon, Slat-1.5)
+    plt.text(x1, y1, "Maximun value: {0:.1f}\nMean value: {1:.1f}\nMin value: {2:.1f}\n"\
+            .format(np.nanmax(df_AVHRR_sst["sst"]), np.nanmean(df_AVHRR_sst["sst"]), 
+                    np.nanmin(df_AVHRR_sst["sst"])), 
+            horizontalalignment='left',
+            verticalalignment='top', 
+            fontsize=9, style='italic', wrap=True)
 
+    x2, y2 = m(Rlon, Slat-1.5)
+    plt.text(x2, y2, "created by guitar79@gs.hs.kr\nAVHRR SST procuct using KOSC data\n{}"\
+             .format(fullname_el[-1]), 
+            horizontalalignment='right',
+            verticalalignment='top', 
+            fontsize=10, style='italic', wrap=True)    
+    
     return plt
 
 
 def draw_histogram_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME):
-    fullname_el = fullname.split("/")
     import matplotlib.pyplot as plt
     import numpy as np
     plt.figure(figsize=(12, 8))
