@@ -75,7 +75,7 @@ for fullname in df["fullname"] :
     
     fullname_el = fullname.split("/")
     
-    if True and (not os.path.exists("{0}{1}_{2}_hist.pdf"\
+    if (not os.path.exists("{0}{1}_{2}_hist.pdf"\
             .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)))\
         or (not os.path.exists("{0}{1}_{2}_map.png" \
              .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))) :
@@ -123,7 +123,7 @@ for fullname in df["fullname"] :
                 continue
             
             try :    
-                if False and os.path.exists("{0}{1}_{2}_hist.pdf"\
+                if os.path.exists("{0}{1}_{2}_hist.pdf"\
                     .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
                     print("{0}{1}_{2}_hist.pdf is already exist..."\
                           .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
@@ -140,7 +140,7 @@ for fullname in df["fullname"] :
                 continue
 
             try :                
-                if False and os.path.exists("{0}{1}_{2}_map.png" \
+                if os.path.exists("{0}{1}_{2}_map.png" \
                      .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
         
                     print("{0}{1}_{2}_map.png is already exist..."\
