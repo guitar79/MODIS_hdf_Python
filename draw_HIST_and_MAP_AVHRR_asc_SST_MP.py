@@ -8,6 +8,7 @@ created by Kevin
 cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
 
 cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for n in {0..100}; do python draw_HIST_and_MAP_AVHRR_asc_SST_MP.py $n ; done
+cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for n in {100..200}; do python draw_HIST_and_MAP_AVHRR_asc_SST_MP.py $n ; done
 '''
 
 from glob import glob
@@ -18,7 +19,6 @@ import MODIS_hdf_utilities
 
 import sys
 from sys import argv # input option
-import MODIS_hdf_utilities
 
 print("argv: {}".format(argv))
 
@@ -29,7 +29,7 @@ else :
     sys.exit()
 
 
-resolution = 0.05
+resolution = 0.01
 yr = 2015
     
 # Set Datafield name
@@ -75,7 +75,7 @@ for fullname in df["fullname"] :
     
     fullname_el = fullname.split("/")
     
-    if (not os.path.exists("{0}{1}_{2}_hist.pdf"\
+    if True and (not os.path.exists("{0}{1}_{2}_hist.pdf"\
             .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)))\
         or (not os.path.exists("{0}{1}_{2}_map.png" \
              .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))) :
@@ -88,27 +88,42 @@ for fullname in df["fullname"] :
                                names = ['index', 'latitude', 'longitude', 'sst'],
                                engine='python')
             df_AVHRR_sst.loc[df_AVHRR_sst.sst == "***", ['sst']] = np.nan
+            
             df_AVHRR_sst["sst"] = df_AVHRR_sst.sst.astype("float16")
             df_AVHRR_sst["longitude"] = df_AVHRR_sst.longitude.astype("float16")
             df_AVHRR_sst["latitude"] = df_AVHRR_sst.latitude.astype("float16")
             print("df_AVHRR_sst : {}".format(df_AVHRR_sst))
             
-            #check dimension    
-            if len(df_AVHRR_sst) == 0 :
-                print("There is no sst data...")
-                    
-            else :
+        except Exception as err :
+                print("Something got wrecked (1): {}".format(err))
+                continue
             
+        
+            #check dimension    
+        if len(df_AVHRR_sst) == 0 :
+            print("There is no sst data...")
+                
+        else :
+            try :    
                 df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude < Llon].index)
                 df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude > Rlon].index)
                 df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude > Nlat].index)
                 df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude < Slat].index)
                 
-                df_AVHRR_sst["lon_cood"] = (((df_AVHRR_sst["longitude"]-Llon)/resolution*100)//100)
-                df_AVHRR_sst["lat_cood"] = (((Nlat-df_AVHRR_sst["latitude"])/resolution*100)//100)
-                df_AVHRR_sst["lat_cood"] = df_AVHRR_sst.lat_cood.astype("int16")
+                #df_AVHRR_sst["lon_cood"] = (((df_AVHRR_sst["longitude"]-Llon)/resolution*100)//100)
+                #df_AVHRR_sst["lat_cood"] = (((Nlat-df_AVHRR_sst["latitude"])/resolution*100)//100)
+                #df_AVHRR_sst = df_AVHRR_sst.dropna()    
+                #print('df_AVHRR_sst["lon_cood"]\n{}'.format(df_AVHRR_sst["lon_cood"]))
+                #print('df_AVHRR_sst["lat_cood"]\n{}'.format(df_AVHRR_sst["lat_cood"]))
+                #df_AVHRR_sst["lon_cood"] = df_AVHRR_sst.lon_cood.astype("int16")
+                #df_AVHRR_sst["lat_cood"] = df_AVHRR_sst.lat_cood.astype("int16")
                 
-                if os.path.exists("{0}{1}_{2}_hist.pdf"\
+            except Exception as err :
+                print("Something got wrecked (2): {}".format(err))
+                continue
+            
+            try :    
+                if False and os.path.exists("{0}{1}_{2}_hist.pdf"\
                     .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
                     print("{0}{1}_{2}_hist.pdf is already exist..."\
                           .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
@@ -120,8 +135,12 @@ for fullname in df["fullname"] :
                     print("{0}{1}_{2}_hist.pdf is created..."\
                         .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                     plt_hist.close()
-            
-                if os.path.exists("{0}{1}_{2}_map.png" \
+            except Exception as err :
+                print("Something got wrecked (3): {}".format(err))
+                continue
+
+            try :                
+                if False and os.path.exists("{0}{1}_{2}_map.png" \
                      .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
         
                     print("{0}{1}_{2}_map.png is already exist..."\
@@ -135,7 +154,7 @@ for fullname in df["fullname"] :
                     print("{0}{1}_{2}_map.png is created..."\
                         .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                     plt_map.close()
-        except Exception as err :
-                print("Something got wrecked : {}".format(err))
-                #continue
+            except Exception as err :
+                    print("Something got wrecked (4) : {}".format(err))
+                    continue
             
