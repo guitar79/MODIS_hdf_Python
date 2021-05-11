@@ -121,6 +121,9 @@ for year in years:
 
 #### make dataframe from file list
 fullnames = sorted(glob(os.path.join(base_dir_name, '*.asc')))
+n = 4
+s = 300
+fullnames = fullnames[n*1000+s:n*1000+1000]
 
 fullnames_dt = []
 for fullname in fullnames :
@@ -136,7 +139,9 @@ df = pd.DataFrame({'fullname':fullnames,'fullname_dt':fullnames_dt})
 df.index = df['fullname_dt']
 df
 
+process_Num = 0
 for fullname in df["fullname"] : 
+    
     fullname_el = fullname.split("/")
     
     if (not os.path.exists("{0}{1}_{2}_hist.pdf"\
@@ -145,7 +150,9 @@ for fullname in df["fullname"] :
              .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))) :
     
         try : 
-            print("Reading ascii file {0}\n".format(fullname))
+            process_Num += 1
+            print("#"*60)
+            print("{1} file(s)\nReading ascii file: {0} \n".format(fullname, process_Num))
             df_AVHRR_sst = pd.read_table("{}".format(fullname), sep='\t', header=None, index_col=0,
                                names = ['index', 'latitude', 'longitude', 'sst'],
                                engine='python')
@@ -199,5 +206,5 @@ for fullname in df["fullname"] :
                     plt_map.close()
         except Exception as err :
                 print("Something got wrecked : {}".format(err))
-                continue
+                #continue
             
