@@ -2,63 +2,34 @@
 # -*- coding: utf-8 -*-
 
 '''
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-Created on Wed Oct 21 14:38:31 2020
 @author: guitar79
 created by Kevin
-#Open hdf file
-NameError: name 'SD' is not defined
-conda install -c conda-forge pyhdf
-
-runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
-
-len(npy_data[795,183])
-np.mean(npy_data[795,183])
-
-hdf_data = np.load(f_name1, allow_pickle=True)
-
-import numpy as np
-import matplotlib.pyplot as plt
-
-plt.title("Histogram of {}".format(fullname), fontsize=9)
-plt.hist(hdf_value)
-
-plt.grid(True)
-plt.show()
-#plt.show()
 
 cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
 
-
+cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for n in {0..100}; do python draw_HIST_and_MAP_AVHRR_asc_SST_MP.py $n ; done
+cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for n in {100..200}; do python draw_HIST_and_MAP_AVHRR_asc_SST_MP.py $n ; done
 '''
 
 from glob import glob
 from datetime import datetime
 import numpy as np
 import os
-import sys
-from sys import argv # input option
 import MODIS_hdf_utilities
 
-'''
+import sys
+from sys import argv # input option
+
 print("argv: {}".format(argv))
 
-if len(argv) < 4 :
-    print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
-    sys.exit()
-elif len(argv) > 4 :
-    print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
-    sys.exit()
-elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly' :
-    L3_perid, resolution, yr = argv[1], float(argv[2]), int(argv[3])
-    print("{}, {}, {} processing started...".format(argv[1], argv[2], argv[3]))
+if len(argv) == 2 :
+    n = int(argv[1])
 else :
-    print("Please input L3_perid and year \n ex) aaa.py daily 0.1 2016")
+    print("Please input n")
     sys.exit()
-'''
-L3_perid = 'daily'
-resolution = 0.5
+
+
+resolution = 0.01
 yr = 2015
     
 # Set Datafield name
@@ -78,52 +49,12 @@ if add_log == True :
 
 #set directory
 base_dir_name = '../L2_AVHRR_SST/'
-save_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_{6}/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
-                                                        str(Slat), str(Nlat), str(resolution), L3_perid)
-
-if not os.path.exists(save_dir_name):
-    os.makedirs(save_dir_name)
-    print ('*'*80)
-    print (save_dir_name, 'is created')
-else :
-    print ('*'*80)
-    print (save_dir_name, 'is exist')
-
-years = range(yr, yr+1)
-
-
-proc_dates = []
-
-#make processing period tuple
-for year in years:
-    dir_name = base_dir_name + str(year) + '/'
-
-    from dateutil.relativedelta import relativedelta
-    s_start_date = datetime(year, 1, 1) #convert startdate to date type
-    s_end_date = datetime(year+1, 1, 1)
-
-    k=0
-    date1 = s_start_date
-    date2 = s_start_date
-    
-    while date2 < s_end_date :
-        k += 1
-        if L3_perid == 'daily' :
-            date2 = date1 + relativedelta(days=1)
-        elif L3_perid == 'weekly' :
-            date2 = date1 + relativedelta(days=8)
-        elif L3_perid == 'monthly' :
-            date2 = date1 + relativedelta(months=1)
-
-        date = (date1, date2, k)
-        proc_dates.append(date)
-        date1 = date2
+save_dir_name = base_dir_name
 
 #### make dataframe from file list
 fullnames = sorted(glob(os.path.join(base_dir_name, '*.asc')))
-n = 4
-s = 300
-fullnames = fullnames[n*1000+s:n*1000+1000]
+
+fullnames = fullnames[n*100:(n+1)*100]
 
 fullnames_dt = []
 for fullname in fullnames :
@@ -144,7 +75,7 @@ for fullname in df["fullname"] :
     
     fullname_el = fullname.split("/")
     
-    if (not os.path.exists("{0}{1}_{2}_hist.pdf"\
+    if True and (not os.path.exists("{0}{1}_{2}_hist.pdf"\
             .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)))\
         or (not os.path.exists("{0}{1}_{2}_map.png" \
              .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))) :
@@ -157,27 +88,42 @@ for fullname in df["fullname"] :
                                names = ['index', 'latitude', 'longitude', 'sst'],
                                engine='python')
             df_AVHRR_sst.loc[df_AVHRR_sst.sst == "***", ['sst']] = np.nan
+            
             df_AVHRR_sst["sst"] = df_AVHRR_sst.sst.astype("float16")
             df_AVHRR_sst["longitude"] = df_AVHRR_sst.longitude.astype("float16")
             df_AVHRR_sst["latitude"] = df_AVHRR_sst.latitude.astype("float16")
             print("df_AVHRR_sst : {}".format(df_AVHRR_sst))
             
-            #check dimension    
-            if len(df_AVHRR_sst) == 0 :
-                print("There is no sst data...")
-                    
-            else :
+        except Exception as err :
+                print("Something got wrecked (1): {}".format(err))
+                continue
             
+        
+            #check dimension    
+        if len(df_AVHRR_sst) == 0 :
+            print("There is no sst data...")
+                
+        else :
+            try :    
                 df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude < Llon].index)
                 df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude > Rlon].index)
                 df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude > Nlat].index)
                 df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude < Slat].index)
                 
-                df_AVHRR_sst["lon_cood"] = (((df_AVHRR_sst["longitude"]-Llon)/resolution*100)//100)
-                df_AVHRR_sst["lat_cood"] = (((Nlat-df_AVHRR_sst["latitude"])/resolution*100)//100)
-                df_AVHRR_sst["lat_cood"] = df_AVHRR_sst.lat_cood.astype("int16")
+                #df_AVHRR_sst["lon_cood"] = (((df_AVHRR_sst["longitude"]-Llon)/resolution*100)//100)
+                #df_AVHRR_sst["lat_cood"] = (((Nlat-df_AVHRR_sst["latitude"])/resolution*100)//100)
+                #df_AVHRR_sst = df_AVHRR_sst.dropna()    
+                #print('df_AVHRR_sst["lon_cood"]\n{}'.format(df_AVHRR_sst["lon_cood"]))
+                #print('df_AVHRR_sst["lat_cood"]\n{}'.format(df_AVHRR_sst["lat_cood"]))
+                #df_AVHRR_sst["lon_cood"] = df_AVHRR_sst.lon_cood.astype("int16")
+                #df_AVHRR_sst["lat_cood"] = df_AVHRR_sst.lat_cood.astype("int16")
                 
-                if os.path.exists("{0}{1}_{2}_hist.pdf"\
+            except Exception as err :
+                print("Something got wrecked (2): {}".format(err))
+                continue
+            
+            try :    
+                if False and os.path.exists("{0}{1}_{2}_hist.pdf"\
                     .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
                     print("{0}{1}_{2}_hist.pdf is already exist..."\
                           .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
@@ -189,8 +135,12 @@ for fullname in df["fullname"] :
                     print("{0}{1}_{2}_hist.pdf is created..."\
                         .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                     plt_hist.close()
-            
-                if os.path.exists("{0}{1}_{2}_map.png" \
+            except Exception as err :
+                print("Something got wrecked (3): {}".format(err))
+                continue
+
+            try :                
+                if False and os.path.exists("{0}{1}_{2}_map.png" \
                      .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
         
                     print("{0}{1}_{2}_map.png is already exist..."\
@@ -204,7 +154,7 @@ for fullname in df["fullname"] :
                     print("{0}{1}_{2}_map.png is created..."\
                         .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                     plt_map.close()
-        except Exception as err :
-                print("Something got wrecked : {}".format(err))
-                #continue
+            except Exception as err :
+                    print("Something got wrecked (4) : {}".format(err))
+                    continue
             
