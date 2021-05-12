@@ -104,11 +104,11 @@ for fullname in df["fullname"] :
             print("There is no sst data...")
                 
         else :
-            try :    
-                df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude < Llon].index)
-                df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude > Rlon].index)
-                df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude > Nlat].index)
-                df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude < Slat].index)
+            #try :    
+                #df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude < Llon].index)
+                #df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.longitude > Rlon].index)
+                #df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude > Nlat].index)
+                #df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.latitude < Slat].index)
                 
                 #df_AVHRR_sst["lon_cood"] = (((df_AVHRR_sst["longitude"]-Llon)/resolution*100)//100)
                 #df_AVHRR_sst["lat_cood"] = (((Nlat-df_AVHRR_sst["latitude"])/resolution*100)//100)
@@ -118,9 +118,9 @@ for fullname in df["fullname"] :
                 #df_AVHRR_sst["lon_cood"] = df_AVHRR_sst.lon_cood.astype("int16")
                 #df_AVHRR_sst["lat_cood"] = df_AVHRR_sst.lat_cood.astype("int16")
                 
-            except Exception as err :
-                print("Something got wrecked (2): {}".format(err))
-                continue
+            #except Exception as err :
+                #print("Something got wrecked (2): {}".format(err))
+                #continue
             
             try :    
                 if os.path.exists("{0}{1}_{2}_hist.pdf"\
