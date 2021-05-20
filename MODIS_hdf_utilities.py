@@ -86,25 +86,100 @@ def fullname_to_datetime_for_KOSC_AVHRR_SST_asc(fullname):
     filename_dt = datetime(int(fileinfo[0]), int(fileinfo[1][:2]), int(fileinfo[1][2:]), int(fileinfo[2][:2]), int(fileinfo[2][2:]))
     return filename_dt
 
-def draw_histogram(hdf_value, longitude, latitude, save_dir_name, fullname, DATAFIELD_NAME):
+def fullname_to_datetime_for_KOSC_MODIS_hdf(fullname):
+    ############################################################
+    #for modis hdf file, filename = '../folder/MYDOCT.2018.0724.0515.aqua-1.hdf'
+    #
+    from datetime import datetime
+    
+    fullname_info = fullname.split('/')
+    fileinfo = fullname_info[-1].split('.')
+    filename_dt = datetime(int(fileinfo[1]), int(fileinfo[2][:2]), int(fileinfo[2][2:]), int(fileinfo[3][:2]), int(fileinfo[3][2:]))
+    return filename_dt
+
+
+def draw_histogram_hdf(hdf_value, longitude, latitude, save_dir_name, fullname, DATAFIELD_NAME):
     fullname_el = fullname.split("/")
     import matplotlib.pyplot as plt
     import numpy as np
     plt.figure(figsize=(12, 8))
     plt.title("Histogram of {0}: \n{1}\nmean : {2:.02f}, max: {3:.02f}, min: {4:.02f}\n\
-              longigude : {5:.02f}~{6:.02f}, latitude: {7:.02f}~{8:.02f}".format(DATAFIELD_NAME, fullname,\
+              longigude : {5:.02f}~{6:.02f}, latitude: {7:.02f}~{8:.02f}".format(DATAFIELD_NAME, fullname_el[-1],\
                                       np.nanmean(hdf_value), np.nanmax(hdf_value), np.nanmin(hdf_value),\
                                       np.nanmin(longitude), np.nanmax(longitude),\
                                       np.nanmin(latitude), np.nanmax(latitude)), fontsize=9)
     plt.hist(hdf_value)
     plt.grid(True)
 
+    return plt
+
+def draw_histogram(hdf_value, longitude, latitude, save_dir_name, fullname, DATAFIELD_NAME):
+    fullname_el = fullname.split("/")
+    import matplotlib.pyplot as plt
+    import numpy as np
+    plt.figure(figsize=(12, 8))
+    plt.title("Histogram of {0}: \n{1}\nmean : {2:.02f}, max: {3:.02f}, min: {4:.02f}\n\
+              longigude : {5:.02f}~{6:.02f}, latitude: {7:.02f}~{8:.02f}".format(DATAFIELD_NAME, fullname_el[-1],\
+                                      np.nanmean(hdf_value), np.nanmax(hdf_value), np.nanmin(hdf_value),\
+                                      np.nanmin(longitude), np.nanmax(longitude),\
+                                      np.nanmin(latitude), np.nanmax(latitude)), fontsize=9)
+    plt.hist(hdf_value)
+    plt.grid(True)
     plt.savefig("{0}{1}_{2}_hist.png"\
         .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
     print("{0}{1}_{2}_hist.png is created..."\
         .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
     plt.close()
-    return None  
+    return None
+
+
+def draw_map_MODIS_hdf(hdf_value, longitude, latitude, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat):
+    fullname_el = fullname.split("/")
+    import numpy as np
+    #if np.isnan(hdf_value).any() :
+    #    print("(np.isnan(hdf_value).any()) is true...")                    
+    #else :
+    from mpl_toolkits.basemap import Basemap
+    import matplotlib.pyplot as plt
+
+    plt.figure(figsize=(10, 10))
+    
+    # sylender map
+    m = Basemap(projection='cyl', resolution='l', \
+                llcrnrlat = Slat, urcrnrlat = Nlat, \
+                llcrnrlon = Llon, urcrnrlon = Rlon)
+    
+    m.drawcoastlines(linewidth=0.25, color='white')
+    m.drawcountries(linewidth=0.25, color='white')
+    m.fillcontinents(color='black', lake_color='black')
+    m.drawmapboundary()
+    
+    m.drawparallels(np.arange(-90., 90., 10.), labels=[1, 0, 0, 0], color='white')
+    m.drawmeridians(np.arange(-180., 181., 15.), labels=[0, 0, 0, 1], color='white')
+    
+    x, y = m(longitude, latitude) # convert to projection map
+    
+    m.pcolormesh(x, y, hdf_value, vmin=0, vmax=40, cmap='coolwarm')
+    m.colorbar(fraction=0.0455, pad=0.044, ticks=(np.arange(-5, 40.1, step=5)))
+    
+    plt.title('MODIS {}'.format(DATAFIELD_NAME), fontsize=20)      
+    
+    x1, y1 = m(Llon, Slat-1.5)
+    plt.text(x1, y1, "Maximun value: {0:.1f}\nMean value: {1:.1f}\nMin value: {2:.1f}\n"\
+            .format(np.nanmax(hdf_value), np.nanmean(hdf_value), 
+                    np.nanmin(hdf_value)), 
+            horizontalalignment='left',
+            verticalalignment='top', 
+            fontsize=9, style='italic', wrap=True)
+
+    x2, y2 = m(Rlon, Slat-1.5)
+    plt.text(x2, y2, "created by guitar79@gs.hs.kr\nAVHRR SST procuct using KOSC data\n{}"\
+             .format(fullname_el[-1]), 
+            horizontalalignment='right',
+            verticalalignment='top', 
+            fontsize=10, style='italic', wrap=True)    
+    
+    return plt
 
 def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat):
     fullname_el = fullname.split("/")

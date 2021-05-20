@@ -155,6 +155,6 @@ for fullname in df["fullname"] :
                         .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                     plt_map.close()
             except Exception as err :
-                    print("Something got wrecked (4) : {}".format(err))
-                    continue
+                print("Something got wrecked (4) : {}".format(err))
+                continue
             
