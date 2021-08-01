@@ -12,7 +12,6 @@ cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for n in {100..200}; do python 
 '''
 
 from glob import glob
-from datetime import datetime
 import numpy as np
 import os
 import MODIS_hdf_utilities
@@ -20,6 +19,7 @@ import MODIS_hdf_utilities
 import sys
 from sys import argv # input option
 
+# 파일을 구간을 나누어 여러개의 프로세스를 돌리기 위한 argv
 print("argv: {}".format(argv))
 
 if len(argv) == 2 :
@@ -27,10 +27,6 @@ if len(argv) == 2 :
 else :
     print("Please input n")
     sys.exit()
-
-
-resolution = 0.01
-yr = 2015
     
 # Set Datafield name
 DATAFIELD_NAME = "AVHRR_SST"
@@ -38,6 +34,7 @@ DATAFIELD_NAME = "AVHRR_SST"
 #Set lon, lat, resolution
 Llon, Rlon = 115, 145
 Slat, Nlat = 20, 55
+resolution = 0.01
 
 #L3_perid, resolution, yr = "daily", 0.1, 2019
 

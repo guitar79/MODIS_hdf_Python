@@ -47,7 +47,7 @@ Llon, Rlon = 115, 145
 Slat, Nlat = 20, 55
 
 # Set Datafield name
-DATAFIELD_NAME = "sst"
+DATAFIELD_NAME = "sst4"
 
 #set directory
 base_dir_name = '../L2_MODIS_SST/'
@@ -101,7 +101,7 @@ for fullname in df["fullname"] :
 #fullname = df["fullname"][0]
     fullname_el = fullname.split("/")
     
-    if True or (not os.path.exists("{0}{1}_{2}_hist.pdf"\
+    if (not os.path.exists("{0}{1}_{2}_hist.pdf"\
             .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)))\
         or (not os.path.exists("{0}{1}_{2}_map.png" \
              .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))) :

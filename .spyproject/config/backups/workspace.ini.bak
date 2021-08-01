@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['classify_MODIS_hdf_SST.py', 'classify_MODIS_hdf_SST4.py', 'draw_HIST_AVHRR_asc_SST.py', 'MODIS_hdf_utilities.py']
+recent_files = ['../../../../../home/guitar79/.config/spyder-py3/temp.py', 'draw_HIST_and_MAP_MODIS_hdf.py', 'draw_HIST_and_MAP_AVHRR_asc_SST.py']
 
