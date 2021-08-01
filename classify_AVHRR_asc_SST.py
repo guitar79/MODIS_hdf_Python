@@ -41,7 +41,6 @@ import sys
 from sys import argv # input option
 import MODIS_hdf_utilities
 
-
 print("argv: {}".format(argv))
 
 if len(argv) < 4 :
@@ -129,7 +128,7 @@ len(fullnames_dt)
 # Calling DataFrame constructor on list 
 df = pd.DataFrame({'fullname':fullnames,'fullname_dt':fullnames_dt})
 df.index = df['fullname_dt']
-df
+print("df:\n{}".format(df))
 
 #proc_date = proc_dates[0]
 for proc_date in proc_dates[:]:
@@ -144,7 +143,7 @@ for proc_date in proc_dates[:]:
             .format(save_dir_name, DATAFIELD_NAME, proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'), 
             str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution))) :
             
-        print(('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8} files are exist...'\
+        print(('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8} files are exist...'
             .format(save_dir_name, DATAFIELD_NAME, proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'), 
             str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution))))
     
@@ -224,9 +223,9 @@ for proc_date in proc_dates[:]:
                         total_data_cnt += data_cnt
     
                         processing_log += "{0}, {1}, {2}, {3:.02f}, {4:.02f}, {5:.02f}, {6:.02f}, {7:.02f}, {8:.02f}, {9:.02f}\n"\
-                            .format(str(file_no), str(data_cnt), str(fullname),  \
+                            .format(str(file_no), str(data_cnt), str(fullname),
                                     np.nanmean(df_AVHRR_sst["sst"]), np.nanmax(df_AVHRR_sst["sst"]), np.nanmin(df_AVHRR_sst["sst"]),
-                                    np.nanmin(df_AVHRR_sst["longitude"]), np.nanmax(df_AVHRR_sst["longitude"]),\
+                                    np.nanmin(df_AVHRR_sst["longitude"]), np.nanmax(df_AVHRR_sst["longitude"]),
                                     np.nanmin(df_AVHRR_sst["latitude"]), np.nanmax(df_AVHRR_sst["latitude"]))
                      
                 processing_log += '#total data number =' + str(total_data_cnt) + '\n'
@@ -240,16 +239,16 @@ for proc_date in proc_dates[:]:
                     str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)), array_alldata)
                 
                 with open('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_info.txt'\
-                      .format(save_dir_name, DATAFIELD_NAME, \
-                      proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'), \
+                      .format(save_dir_name, DATAFIELD_NAME,
+                      proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
                       str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)), 'w') as f:
                     f.write(processing_log)
     
                 print('#'*60)
-                MODIS_hdf_utilities.write_log(log_file, \
+                MODIS_hdf_utilities.write_log(log_file,
                     '{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8} files are is created.'\
-                    .format(save_dir_name, DATAFIELD_NAME, \
-                    proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'), \
+                    .format(save_dir_name, DATAFIELD_NAME,
+                    proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
                     str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)))
                     
             except Exception as err :
