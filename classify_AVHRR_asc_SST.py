@@ -224,14 +224,14 @@ for proc_date in proc_dates[:]:
                         
                         for index, row in df_AVHRR_sst.iterrows():
                             data_cnt += 1
-                            #array_alldata[int(lon_cood[i][j])][int(lat_cood[i][j])].append(hdf_value[i][j])
-                            #array_alldata[df_AVHRR_sst.lon_cood[index]][df_AVHRR_sst.lat_cood[index]].append((fullname_el[-1], df_AVHRR_sst.sst[index]))
-                            #print("array_alldata[{}][{}].append({}, {})"\
-                            #      .format(df_AVHRR_sst.lon_cood[index], df_AVHRR_sst.lat_cood[index], fullname_el[-1], df_AVHRR_sst.sst[index]))
+                            array_alldata[int(lon_cood[i][j])][int(lat_cood[i][j])].append(hdf_value[i][j])
+                            array_alldata[df_AVHRR_sst.lon_cood[index]][df_AVHRR_sst.lat_cood[index]].append((fullname_el[-1], df_AVHRR_sst.sst[index]))
+                            print("array_alldata[{}][{}].append({}, {})"\
+                                  .format(df_AVHRR_sst.lon_cood[index], df_AVHRR_sst.lat_cood[index], fullname_el[-1], df_AVHRR_sst.sst[index]))
                             
-                            array_alldata[df_AVHRR_sst.lon_cood[index]][df_AVHRR_sst.lat_cood[index]].append(df_AVHRR_sst.sst[index])
-                            print("array_alldata[{}][{}].append({})"\
-                                  .format(df_AVHRR_sst.lon_cood[index], df_AVHRR_sst.lat_cood[index], df_AVHRR_sst.sst[index]))
+                            #array_alldata[df_AVHRR_sst.lon_cood[index]][df_AVHRR_sst.lat_cood[index]].append(df_AVHRR_sst.sst[index])
+                            #print("array_alldata[{}][{}].append({})"\
+                            #      .format(df_AVHRR_sst.lon_cood[index], df_AVHRR_sst.lat_cood[index], df_AVHRR_sst.sst[index]))
                             
                             print("{} data added...".format(data_cnt))
                         
