@@ -210,4 +210,7 @@ dependencies:
   - zipp=3.5.0=pyhd3eb1b0_0
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.9=haebb681_0
+  - pip:
+    - cftime==1.5.0
+    - netcdf4==1.5.7
 prefix: /home/guitar79/anaconda3/envs/MODIS_hdf_Python_env
