@@ -26,7 +26,9 @@ plt.show()
 #plt.show()
 
 cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
-cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
+
+conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
+
 
 '''
 
@@ -38,7 +40,7 @@ import sys
 import MODIS_hdf_utilities
 
 arg_mode = True
-arg_mode = False
+arg_mode = True
 
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
