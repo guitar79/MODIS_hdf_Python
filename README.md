@@ -20,7 +20,7 @@ windows
 deactivate
 
 # install module
-conda install pandas
+conda install pandas spyder
 conda install -c conda-forge pyhdf basemap basemap-date-hires
 
 

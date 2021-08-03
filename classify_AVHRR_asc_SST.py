@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -38,27 +35,31 @@ from datetime import datetime
 import numpy as np
 import os
 import sys
-from sys import argv # input option
 import MODIS_hdf_utilities
 
-print("argv: {}".format(argv))
+arg_mode = True
+arg_mode = False
 
-if len(argv) < 4 :
-    print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
-    sys.exit()
-elif len(argv) > 4 :
-    print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
-    sys.exit()
-elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly' :
-    L3_perid, resolution, year = argv[1], float(argv[2]), int(argv[3])
-    print("{}, {}, {} processing started...".format(argv[1], argv[2], argv[3]))
+if arg_mode == True :
+    from sys import argv # input option
+    print("argv: {}".format(argv))
+
+    if len(argv) < 4 :
+        print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
+        sys.exit()
+    elif len(argv) > 4 :
+        print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
+        sys.exit()
+    elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly' :
+        L3_perid, resolution, year = argv[1], float(argv[2]), int(argv[3])
+        print("{}, {}, {} processing started...".format(argv[1], argv[2], argv[3]))
+    else :
+        print("Please input L3_perid and year \n ex) aaa.py daily 0.1 2016")
+        sys.exit()
 else :
-    print("Please input L3_perid and year \n ex) aaa.py daily 0.1 2016")
-    sys.exit()
-
-#L3_perid = 'daily'
-#resolution = 0.1
-#year = 2015
+    L3_perid = 'daily'
+    resolution = 0.1
+    year = 2019
     
 # Set Datafield name
 DATAFIELD_NAME = "AVHRR_SST"
@@ -132,7 +133,7 @@ print("df:\n{}".format(df))
 
 #proc_date = proc_dates[0]
 for proc_date in proc_dates[:]:
-
+    #proc_date = proc_dates[0]
     df_proc = df[(df['fullname_dt'] >= proc_date[0]) & (df['fullname_dt'] < proc_date[1])]
     
     #check file exist??
@@ -174,18 +175,19 @@ for proc_date in proc_dates[:]:
                 total_data_cnt = 0
                 file_no = 0
                 processing_log += "#processing file list\n"
-                processing_log += "#file No, data_count, filename, mean(sst), max(sst), min(sst), \
-                                min(longitude), max(longitude), min(latitude), max(latitude)\n"
+                processing_log += "#file No, data_count, filename, mean(sst), max(sst), min(sst), min(longitude), max(longitude), min(latitude), max(latitude)\n"
                 array_alldata = array_data.copy()
                 
                 #fullname = df_proc["fullname"][0]
                 for fullname in df_proc["fullname"] : 
+                    #fullname = df_proc["fullname"][0]
                     fullname_el = fullname.split("/")
                     print("Reading ascii file {0}\n".format(fullname))
                     df_AVHRR_sst = pd.read_table("{}".format(fullname), sep='\t', header=None, index_col=0,
                                        names = ['index', 'latitude', 'longitude', 'sst'],
                                        engine='python')
-                    df_AVHRR_sst.loc[df_AVHRR_sst.sst == "***", ['sst']] = np.nan
+                    df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.sst == "***"].index)
+                    #df_AVHRR_sst.loc[df_AVHRR_sst.sst == "***", ['sst']] = np.nan
                     df_AVHRR_sst["sst"] = df_AVHRR_sst.sst.astype("float16")
                     df_AVHRR_sst["longitude"] = df_AVHRR_sst.longitude.astype("float16")
                     df_AVHRR_sst["latitude"] = df_AVHRR_sst.latitude.astype("float16")
