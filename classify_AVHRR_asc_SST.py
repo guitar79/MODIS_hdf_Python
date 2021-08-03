@@ -40,6 +40,13 @@ import MODIS_hdf_utilities
 arg_mode = True
 arg_mode = False
 
+log_file = os.path.basename(__file__)[:-3]+".log"
+err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
+print ("log_file: {}".format(log_file))
+print ("err_log_file: {}".format(err_log_file))
+
+for i in range(1):
+    break
 if arg_mode == True :
     from sys import argv # input option
     print("argv: {}".format(argv))
@@ -149,37 +156,39 @@ for proc_date in proc_dates[:]:
             str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution))))
     
     else : 
-
+        
         if len(df_proc) == 0 :
             print("There is no data in {0} - {1} ...\n"\
                   .format(proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d')))
         
         else :                
             
-            try : 
-                print("df_proc: {}".format(df_proc))
-            
-                processing_log = "#This file is created using Python : https://github.com/guitar79/MODIS_hdf_Python\n"
-                processing_log += "#L3_perid = {}, start date = {}, end date = {}\n"\
-                    .format(L3_perid, proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'))
+            print("df_proc: {}".format(df_proc))
         
-                processing_log += "#Llon = {}, Rlon = {}, Slat = {}, Nlat = {}, resolution = {}\n"\
-                    .format(str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution))
-                
-                # make array_data
-                print("{0}-{1} Start making grid arrays...\n".\
-                      format(proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d')))
-                array_data = MODIS_hdf_utilities.make_grid_array(Llon, Rlon, Slat, Nlat, resolution)
-                print('Grid arrays are created...........\n')
+            processing_log = "#This file is created using Python : https://github.com/guitar79/MODIS_hdf_Python\n"
+            processing_log += "#L3_perid = {}, start date = {}, end date = {}\n"\
+                .format(L3_perid, proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'))
+    
+            processing_log += "#Llon = {}, Rlon = {}, Slat = {}, Nlat = {}, resolution = {}\n"\
+                .format(str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution))
             
-                total_data_cnt = 0
-                file_no = 0
-                processing_log += "#processing file list\n"
-                processing_log += "#file No, data_count, filename, mean(sst), max(sst), min(sst), min(longitude), max(longitude), min(latitude), max(latitude)\n"
-                array_alldata = array_data.copy()
+            # make array_data
+            print("{0}-{1} Start making grid arrays...\n".\
+                  format(proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d')))
+            array_data = MODIS_hdf_utilities.make_grid_array(Llon, Rlon, Slat, Nlat, resolution)
+            print('Grid arrays are created...........\n')
+        
+            total_data_cnt = 0
+            file_no = 0
+            processing_log += "#processing file list\n"
+            processing_log += "#file No, data_count, filename, mean(sst), max(sst), min(sst), min(longitude), max(longitude), min(latitude), max(latitude)\n"
+            array_alldata = array_data.copy()
+            print('array_alldata is copied...........\n')
+            
+            for fullname in df_proc["fullname"] : 
                 
-                #fullname = df_proc["fullname"][0]
-                for fullname in df_proc["fullname"] : 
+                try : 
+            
                     #fullname = df_proc["fullname"][0]
                     fullname_el = fullname.split("/")
                     print("Reading ascii file {0}\n".format(fullname))
@@ -188,9 +197,9 @@ for proc_date in proc_dates[:]:
                                        engine='python')
                     df_AVHRR_sst = df_AVHRR_sst.drop(df_AVHRR_sst[df_AVHRR_sst.sst == "***"].index)
                     #df_AVHRR_sst.loc[df_AVHRR_sst.sst == "***", ['sst']] = np.nan
-                    df_AVHRR_sst["sst"] = df_AVHRR_sst.sst.astype("float16")
-                    df_AVHRR_sst["longitude"] = df_AVHRR_sst.longitude.astype("float16")
-                    df_AVHRR_sst["latitude"] = df_AVHRR_sst.latitude.astype("float16")
+                    df_AVHRR_sst["sst"] = df_AVHRR_sst.sst.astype("float64")
+                    df_AVHRR_sst["longitude"] = df_AVHRR_sst.longitude.astype("float64")
+                    df_AVHRR_sst["latitude"] = df_AVHRR_sst.latitude.astype("float64")
                     print("df_AVHRR_sst : {}".format(df_AVHRR_sst))
                     
                     #check dimension    
@@ -215,10 +224,13 @@ for proc_date in proc_dates[:]:
                             data_cnt += 1
                             #array_alldata[int(lon_cood[i][j])][int(lat_cood[i][j])].append(hdf_value[i][j])
                             #array_alldata[df_AVHRR_sst.lon_cood[index]][df_AVHRR_sst.lat_cood[index]].append((fullname_el[-1], df_AVHRR_sst.sst[index]))
+                            #print("array_alldata[{}][{}].append({}, {})"\
+                            #      .format(df_AVHRR_sst.lon_cood[index], df_AVHRR_sst.lat_cood[index], fullname_el[-1], df_AVHRR_sst.sst[index]))
+                            
                             array_alldata[df_AVHRR_sst.lon_cood[index]][df_AVHRR_sst.lat_cood[index]].append(df_AVHRR_sst.sst[index])
-                                    
-                            print("array_alldata[{}][{}].append({}, {})"\
-                                  .format(df_AVHRR_sst.lon_cood[index], df_AVHRR_sst.lat_cood[index], fullname_el[-1], df_AVHRR_sst.sst[index]))
+                            print("array_alldata[{}][{}].append({})"\
+                                  .format(df_AVHRR_sst.lon_cood[index], df_AVHRR_sst.lat_cood[index], df_AVHRR_sst.sst[index]))
+                            
                             print("{} data added...".format(data_cnt))
                         
                         file_no += 1
@@ -229,30 +241,31 @@ for proc_date in proc_dates[:]:
                                     np.nanmean(df_AVHRR_sst["sst"]), np.nanmax(df_AVHRR_sst["sst"]), np.nanmin(df_AVHRR_sst["sst"]),
                                     np.nanmin(df_AVHRR_sst["longitude"]), np.nanmax(df_AVHRR_sst["longitude"]),
                                     np.nanmin(df_AVHRR_sst["latitude"]), np.nanmax(df_AVHRR_sst["latitude"]))
-                     
-                processing_log += '#total data number =' + str(total_data_cnt) + '\n'
-                
-                #print("array_alldata: {}".format(array_alldata))
-                print("prodessing_log: {}".format(processing_log))
-                                            
-                np.save('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_alldata.npy'\
-                    .format(save_dir_name, DATAFIELD_NAME, 
-                    proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'), 
-                    str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)), array_alldata)
-                
-                with open('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_info.txt'\
-                      .format(save_dir_name, DATAFIELD_NAME,
-                      proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
-                      str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)), 'w') as f:
-                    f.write(processing_log)
-    
-                print('#'*60)
-                MODIS_hdf_utilities.write_log(log_file,
-                    '{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8} files are is created.'\
-                    .format(save_dir_name, DATAFIELD_NAME,
-                    proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
-                    str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)))
+                            
+                    processing_log += '#total data number =' + str(total_data_cnt) + '\n'
                     
-            except Exception as err :
-                print("Something got wrecked (1): {}".format(err))
-                continue
+                    #print("array_alldata: {}".format(array_alldata))
+                    print("prodessing_log: {}".format(processing_log))
+                                                
+                    np.save('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_alldata.npy'\
+                        .format(save_dir_name, DATAFIELD_NAME, 
+                        proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'), 
+                        str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)), array_alldata)
+                    
+                    with open('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_info.txt'\
+                          .format(save_dir_name, DATAFIELD_NAME,
+                          proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
+                          str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)), 'w') as f:
+                        f.write(processing_log)
+        
+                    print('#'*60)
+                    MODIS_hdf_utilities.write_log(log_file,
+                        '{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8} files are is created.'\
+                        .format(save_dir_name, DATAFIELD_NAME,
+                        proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
+                        str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)))
+                    
+                except Exception as err :
+                    MODIS_hdf_utilities.write_log(err_log_file, err)
+                    continue
+                    

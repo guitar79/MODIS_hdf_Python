@@ -16,17 +16,26 @@ from datetime import datetime
 import os
 from pyhdf.SD import SD, SDC
 
-def write_log(log_file, log_str):
+def write_log2(log_file, log_str):
     import os
     with open(log_file, 'a') as log_f:
         log_f.write("{}, {}\n".format(os.path.basename(__file__), log_str))
     return print ("{}, {}\n".format(os.path.basename(__file__), log_str))
+
+def write_log(log_file, log_str):
+    import time
+    timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+    msg = '[' + timestamp + '] ' + log_str
+    print (msg)
+    with open(log_file, 'a') as f:
+        f.write(msg + '\n')
 
 #for checking time
 cht_start_time = datetime.now()
 
 #JulianDate_to_date(2018, 131) -- '20180511'
 def JulianDate_to_date(y, jd):
+    import calendar
     ############################################################
     #JulianDate_to_date(2018, 131) -- '20180511'
     #
