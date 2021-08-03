@@ -1,36 +1,13 @@
-'''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-Created on Wed Oct 21 14:38:31 2020
-@author: guitar79
-created by Kevin
-#Open hdf file
-NameError: name 'SD' is not defined
-conda install -c conda-forge pyhdf
-
-runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
-
-len(npy_data[795,183])
-np.mean(npy_data[795,183])
-
-hdf_data = np.load(f_name1, allow_pickle=True)
-
-import numpy as np
-import matplotlib.pyplot as plt
-
-plt.title("Histogram of {}".format(fullname), fontsize=9)
-plt.hist(hdf_value)
-
-plt.grid(True)
-plt.show()
-#plt.show()
-
-cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
-
-conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
-
-conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python classify_AVHRR_asc_SST.py daily 1.0 2019
 '''
+#############################################################
+#runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
+#cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
+#conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
+#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python classify_AVHRR_asc_SST.py daily 1.0 2019
+'''
+
 
 from glob import glob
 from datetime import datetime
@@ -47,8 +24,6 @@ err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
 print ("log_file: {}".format(log_file))
 print ("err_log_file: {}".format(err_log_file))
 
-for i in range(1):
-    break
 if arg_mode == True :
     from sys import argv # input option
     print("argv: {}".format(argv))

@@ -190,6 +190,59 @@ def draw_map_MODIS_hdf(hdf_value, longitude, latitude, save_dir_name, fullname, 
     
     return plt
 
+def draw_map_SST_nc(hdf_value, longitude, latitude, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat):
+    fullname_el = fullname.split("/")
+    import numpy as np
+    #if np.isnan(hdf_value).any() :
+    #    print("(np.isnan(hdf_value).any()) is true...")                    
+    #else :
+    from mpl_toolkits.basemap import Basemap
+    import matplotlib.pyplot as plt
+
+    plt.figure(figsize=(10, 10))
+    
+    # sylender map
+    m = Basemap(projection='cyl', resolution='l', \
+                llcrnrlat = Slat, urcrnrlat = Nlat, \
+                llcrnrlon = Llon, urcrnrlon = Rlon)
+    
+    m.drawcoastlines(linewidth=0.25, color='white')
+    m.drawcountries(linewidth=0.25, color='white')
+    m.fillcontinents(color='black', lake_color='black')
+    m.drawmapboundary()
+    
+    m.drawparallels(np.arange(-90., 90., 10.), labels=[1, 0, 0, 0], color='white')
+    m.drawmeridians(np.arange(-180., 181., 15.), labels=[0, 0, 0, 1], color='white')
+    
+    lons,lats= np.meshgrid(longitude, latitude) # for this dataset, longitude is 0 through 360, so you need to subtract 180 to properly display on map
+    x,y = m(lons,lats)
+    
+    #x, y = m(longitude, latitude) # convert to projection map
+    
+    m.pcolormesh(x, y, hdf_value[0,:,:], vmin=0, vmax=40, cmap='coolwarm')
+    m.colorbar(fraction=0.0455, pad=0.044, ticks=(np.arange(-5, 40.1, step=5)))
+    
+    plt.title('MODIS {}'.format(DATAFIELD_NAME), fontsize=20)      
+    
+    x1, y1 = m(Llon, Slat-1.5)
+    plt.text(x1, y1, "Maximun value: {0:.1f}\nMean value: {1:.1f}\nMin value: {2:.1f}\n"\
+            .format(np.nanmax(hdf_value), np.nanmean(hdf_value), 
+                    np.nanmin(hdf_value)), 
+            horizontalalignment='left',
+            verticalalignment='top', 
+            fontsize=9, style='italic', wrap=True)
+
+    x2, y2 = m(Rlon, Slat-1.5)
+    plt.text(x2, y2, "created by guitar79@gs.hs.kr\nAVHRR SST procuct using KOSC data\n{}"\
+             .format(fullname_el[-1]), 
+            horizontalalignment='right',
+            verticalalignment='top', 
+            fontsize=10, style='italic', wrap=True)    
+    
+    return plt
+
+
+
 def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat):
     fullname_el = fullname.split("/")
     import numpy as np
