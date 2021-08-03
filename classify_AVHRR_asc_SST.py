@@ -40,7 +40,7 @@ import sys
 import MODIS_hdf_utilities
 
 arg_mode = True
-arg_mode = True
+#arg_mode =  False
 
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
@@ -77,12 +77,6 @@ DATAFIELD_NAME = "AVHRR_SST"
 Llon, Rlon = 115, 145
 Slat, Nlat = 20, 55
 #L3_perid, resolution, yr = "daily", 0.1, 2019
-
-# long file option
-add_log = True
-if add_log == True :
-    log_file = "AVHRR_{}_python.log".format(DATAFIELD_NAME)
-    err_log_file = "AVHRR_{}_python_err.log".format(DATAFIELD_NAME)
 
 #set directory
 base_dir_name = '../L2_AVHRR_SST/'
