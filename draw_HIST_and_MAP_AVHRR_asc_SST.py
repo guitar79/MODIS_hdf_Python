@@ -19,6 +19,11 @@ import MODIS_hdf_utilities
 import sys
 from sys import argv # input option
 
+log_file = os.path.basename(__file__)[:-3]+".log"
+err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
+print ("log_file: {}".format(log_file))
+print ("err_log_file: {}".format(err_log_file))
+
 # 파일을 구간을 나누어 여러개의 프로세스를 돌리기 위한 argv
 print("argv: {}".format(argv))
 
@@ -38,11 +43,6 @@ resolution = 0.01
 
 #L3_perid, resolution, yr = "daily", 0.1, 2019
 
-# long file option
-add_log = True
-if add_log == True :
-    log_file = "AVHRR_{}_python.log".format(DATAFIELD_NAME)
-    err_log_file = "AVHRR_{}_python_err.log".format(DATAFIELD_NAME)
 
 #set directory
 base_dir_name = '../L2_AVHRR_SST/'
@@ -92,8 +92,8 @@ for fullname in df["fullname"] :
             print("df_AVHRR_sst : {}".format(df_AVHRR_sst))
             
         except Exception as err :
-                print("Something got wrecked (1): {}".format(err))
-                continue
+            MODIS_hdf_utilities.write_log(err_log_file, err)
+            continue
             
         
             #check dimension    
@@ -119,30 +119,31 @@ for fullname in df["fullname"] :
                 #print("Something got wrecked (2): {}".format(err))
                 #continue
             
-            try :    
-                if os.path.exists("{0}{1}_{2}_hist.pdf"\
-                    .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
-                    print("{0}{1}_{2}_hist.pdf is already exist..."\
-                          .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
-                else : 
-                
+            
+            if os.path.exists("{0}{1}_{2}_hist.pdf"\
+                .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
+                print("{0}{1}_{2}_hist.pdf is already exist..."\
+                      .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+            else : 
+                try :        
                     plt_hist = MODIS_hdf_utilities.draw_histogram_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME)            
                     plt_hist.savefig("{0}{1}_{2}_hist.pdf"\
                         .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                     print("{0}{1}_{2}_hist.pdf is created..."\
                         .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                     plt_hist.close()
-            except Exception as err :
-                print("Something got wrecked (3): {}".format(err))
-                continue
+                except Exception as err :
+                    MODIS_hdf_utilities.write_log(err_log_file, err)
+                    continue
 
-            try :                
-                if os.path.exists("{0}{1}_{2}_map.png" \
-                     .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
-        
-                    print("{0}{1}_{2}_map.png is already exist..."\
-                          .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
-                else : 
+            
+            if os.path.exists("{0}{1}_{2}_map.png" \
+                 .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
+    
+                print("{0}{1}_{2}_map.png is already exist..."\
+                      .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+            else : 
+                try :                
                 
                     plt_map = MODIS_hdf_utilities.draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat)
                     
@@ -151,7 +152,6 @@ for fullname in df["fullname"] :
                     print("{0}{1}_{2}_map.png is created..."\
                         .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
                     plt_map.close()
-            except Exception as err :
-                print("Something got wrecked (4) : {}".format(err))
-                continue
-            
+                except Exception as err :
+                    MODIS_hdf_utilities.write_log(err_log_file, err)
+                    continue

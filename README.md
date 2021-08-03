@@ -7,7 +7,7 @@ conda env list
 
 # activate 가상환경 시작
 mac/linux
-source activate MODIS_hdf_Python_env
+conda activate MODIS_hdf_Python_env
 
 windows
 activate MODIS_hdf_Python_env

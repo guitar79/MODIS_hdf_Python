@@ -241,7 +241,19 @@ def draw_map_SST_nc(hdf_value, longitude, latitude, save_dir_name, fullname, DAT
     
     return plt
 
+def draw_histogram_SST_NC(SST, longitude, latitude, fullname, DATAFIELD_NAME):
+    import matplotlib.pyplot as plt
+    import numpy as np
+    plt.figure(figsize=(12, 8))
+    plt.title("Histogram of {0}: \n{1}\nmean : {2:.02f}, max: {3:.02f}, min: {4:.02f}\n\
+              longigude : {5:.02f}~{6:.02f}, latitude: {7:.02f}~{8:.02f}".format(DATAFIELD_NAME, fullname,\
+                                      np.nanmean(SST[0,:,:]), np.nanmax(SST[0,:,:]), np.nanmin(SST[0,:,:]),\
+                                      np.nanmin(longitude), np.nanmax(longitude),\
+                                      np.nanmin(latitude), np.nanmax(latitude)), fontsize=9)
+    plt.hist(SST[0,:,:])
+    plt.grid(True)
 
+    return plt
 
 def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat):
     fullname_el = fullname.split("/")

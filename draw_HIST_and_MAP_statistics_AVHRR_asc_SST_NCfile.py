@@ -1,15 +1,9 @@
 
 from glob import glob
-from datetime import datetime
-import numpy as np
-import netCDF4 as nc
 import os
 import sys
 
 from netCDF4 import Dataset as NetCDFFile 
-import matplotlib.pyplot as plt
-import numpy as np
-from mpl_toolkits.basemap import Basemap
 
 import MODIS_hdf_utilities
 
@@ -69,22 +63,40 @@ for fullname in fullnames :
     filename_el = fullname_el[-1].split("_")
     #if os.path.exists('{0}_mean.npy'.format(fullname[:-4])) :
     #    print('{0}_mean.npy is already exist...'.format(fullname[:-4]))
+    nc_data = NetCDFFile(fullname) # note this file is 2.5 degree, so low resolution data
+    lat = nc_data.variables['latitude'][:]
+    lon = nc_data.variables['longitude'][:]
+    time = nc_data.variables['time'][:]
+    SST = nc_data.variables['SST'][:] # SST
     
-    if os.path.exists('{0}_mean_map.png'.format(fullname[:-3])) :
-        print('{0}_mean_map.png is already exist'.format(fullname[:-3]))
+    
+    if False and os.path.exists("{0}{1}_{2}_hist.pdf"\
+        .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
+        print("{0}{1}_{2}_hist.pdf is already exist..."\
+              .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
+    else : 
+        try :        
+            plt_hist = MODIS_hdf_utilities.draw_histogram_SST_NC(SST, lon, lat, fullname, DATAFIELD_NAME)
+            plt_hist.savefig('{0}_hist.pdf'.format(fullname[:-3]))
+            print('{0}_hist.pdf is created...'.format(fullname[:-3]))
+            plt_hist.close()
+        except Exception as err :
+            MODIS_hdf_utilities.write_log(err_log_file, err)
+            continue           
+    
+    if False and os.path.exists('{0}_map.png'.format(fullname[:-3])) :
+        print('{0}_map.png is already exist'.format(fullname[:-3]))
     
     else : 
         
-        nc_data = NetCDFFile(fullname) # note this file is 2.5 degree, so low resolution data
-        lat = nc_data.variables['latitude'][:]
-        lon = nc_data.variables['longitude'][:]
-        time = nc_data.variables['time'][:]
-        SST = nc_data.variables['SST'][:] # SST
+        try :        
         
-        plt_map = MODIS_hdf_utilities.draw_map_SST_nc(SST, lon, lat, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat)
-        
-        plt_map.savefig('{0}_mean_map.png'.format(fullname[:-3]))
-        print('{0}_mean_map.png is created...'.format(fullname[:-3]))
-        plt_map.close()
-        
-    
+            plt_map = MODIS_hdf_utilities.draw_map_SST_nc(SST, lon, lat, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat)
+            
+            plt_map.savefig('{0}_map.png'.format(fullname[:-3]))
+            print('{0}_map.png is created...'.format(fullname[:-3]))
+            plt_map.close()
+            
+        except Exception as err :
+            MODIS_hdf_utilities.write_log(err_log_file, err)
+            continue
