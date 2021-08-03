@@ -222,7 +222,7 @@ def draw_map_SST_nc(hdf_value, longitude, latitude, save_dir_name, fullname, DAT
     m.pcolormesh(x, y, hdf_value[0,:,:], vmin=0, vmax=40, cmap='coolwarm')
     m.colorbar(fraction=0.0455, pad=0.044, ticks=(np.arange(-5, 40.1, step=5)))
     
-    plt.title('MODIS {}'.format(DATAFIELD_NAME), fontsize=20)      
+    plt.title('MODIS {}'.format(DATAFIELD_NAME), fontsize=20, y=1.03)      
     
     x1, y1 = m(Llon, Slat-1.5)
     plt.text(x1, y1, "Maximun value: {0:.1f}\nMean value: {1:.1f}\nMin value: {2:.1f}\n"\
@@ -242,16 +242,33 @@ def draw_map_SST_nc(hdf_value, longitude, latitude, save_dir_name, fullname, DAT
     return plt
 
 def draw_histogram_SST_NC(SST, longitude, latitude, fullname, DATAFIELD_NAME):
+    fullname_el = fullname.split("/")
     import matplotlib.pyplot as plt
     import numpy as np
     plt.figure(figsize=(12, 8))
-    plt.title("Histogram of {0}: \n{1}\nmean : {2:.02f}, max: {3:.02f}, min: {4:.02f}\n\
-              longigude : {5:.02f}~{6:.02f}, latitude: {7:.02f}~{8:.02f}".format(DATAFIELD_NAME, fullname,\
-                                      np.nanmean(SST[0,:,:]), np.nanmax(SST[0,:,:]), np.nanmin(SST[0,:,:]),\
-                                      np.nanmin(longitude), np.nanmax(longitude),\
-                                      np.nanmin(latitude), np.nanmax(latitude)), fontsize=9)
+    #plt.title("Histogram of {0}: \n{1}\nmean : {2:.02f}, max: {3:.02f}, min: {4:.02f}\n\
+    #          longigude : {5:.02f}~{6:.02f}, latitude: {7:.02f}~{8:.02f}".format(DATAFIELD_NAME, fullname,\
+    #                                  np.nanmean(SST[0,:,:]), np.nanmax(SST[0,:,:]), np.nanmin(SST[0,:,:]),\
+    #                                  np.nanmin(longitude), np.nanmax(longitude),\
+    #                                  np.nanmin(latitude), np.nanmax(latitude)), fontsize=9)
+    
+    plt.title("Histogram of {0}".format(DATAFIELD_NAME), fontsize=20, y=1.03)
+    
     plt.hist(SST[0,:,:])
     plt.grid(True)
+    
+    plt.text(0, -0.25, "Maximun value: {0:.1f}\nMean value: {1:.1f}\nMin value: {2:.1f}\n"\
+            .format(np.nanmax(SST[0,:,:]), np.nanmean(SST[0,:,:]), 
+                    np.nanmin(SST[0,:,:])), 
+            horizontalalignment='left',
+            verticalalignment='top', 
+            fontsize=9, style='italic', wrap=True)
+   
+    plt.text(np.nanmax(SST[0,:,:]), -0.25, "created by guitar79@gs.hs.kr\nAVHRR SST procuct using KOSC data\n{}"\
+             .format(fullname_el[-1]), 
+            horizontalalignment='right',
+            verticalalignment='top', 
+            fontsize=10, style='italic', wrap=True)  
 
     return plt
 
@@ -308,7 +325,7 @@ def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME
     m.pcolormesh(x, y, sst, vmin=0, vmax=40, cmap='coolwarm')
     m.colorbar(fraction=0.0455, pad=0.044, ticks=(np.arange(-5, 40.1, step=5)))
     
-    plt.title('AVHRR SST', fontsize=20)      
+    plt.title('{}'.format(DATAFIELD_NAME), fontsize=20)
     
     x1, y1 = m(Llon, Slat-1.5)
     plt.text(x1, y1, "Maximun value: {0:.1f}\nMean value: {1:.1f}\nMin value: {2:.1f}\n"\
@@ -329,16 +346,34 @@ def draw_map_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME
 
 
 def draw_histogram_AVHRR_SST_asc(df_AVHRR_sst, save_dir_name, fullname, DATAFIELD_NAME):
+    fullname_el = fullname.split("/")
     import matplotlib.pyplot as plt
     import numpy as np
     plt.figure(figsize=(12, 8))
-    plt.title("Histogram of {0}: \n{1}\nmean : {2:.02f}, max: {3:.02f}, min: {4:.02f}\n\
-              longigude : {5:.02f}~{6:.02f}, latitude: {7:.02f}~{8:.02f}".format(DATAFIELD_NAME, fullname,\
-                                      np.nanmean(df_AVHRR_sst["sst"]), np.nanmax(df_AVHRR_sst["sst"]), np.nanmin(df_AVHRR_sst["sst"]),\
-                                      np.nanmin(df_AVHRR_sst["longitude"]), np.nanmax(df_AVHRR_sst["longitude"]),\
-                                      np.nanmin(df_AVHRR_sst["latitude"]), np.nanmax(df_AVHRR_sst["latitude"])), fontsize=9)
+    plt.title("Histogram of {0}".format(DATAFIELD_NAME), fontsize=20)
+    
+    #plt.title("Histogram of {0}: \n{1}\nmean : {2:.02f}, max: {3:.02f}, min: {4:.02f}\n\
+    #          longigude : {5:.02f}~{6:.02f}, latitude: {7:.02f}~{8:.02f}".format(DATAFIELD_NAME, fullname,\
+    #                                  np.nanmean(df_AVHRR_sst["sst"]), np.nanmax(df_AVHRR_sst["sst"]), np.nanmin(df_AVHRR_sst["sst"]),\
+    #                                  np.nanmin(df_AVHRR_sst["longitude"]), np.nanmax(df_AVHRR_sst["longitude"]),\
+    #                                  np.nanmin(df_AVHRR_sst["latitude"]), np.nanmax(df_AVHRR_sst["latitude"])), fontsize=9)
     plt.hist(df_AVHRR_sst["sst"])
     plt.grid(True)
+    
+    plt.text(0, -0.2, "Maximun value: {0:.1f}\nMean value: {1:.1f}\nMin value: {2:.1f}\n"\
+            .format(np.nanmax(df_AVHRR_sst["sst"]), np.nanmean(df_AVHRR_sst["sst"]), 
+                    np.nanmin(df_AVHRR_sst["sst"])), 
+            horizontalalignment='left',
+            verticalalignment='top', 
+            fontsize=9, style='italic', wrap=True)
+   
+    plt.text(np.nanmax(df_AVHRR_sst["sst"]), -0.2, "created by guitar79@gs.hs.kr\nAVHRR SST procuct using KOSC data\n{}"\
+             .format(fullname_el[-1]), 
+            horizontalalignment='right',
+            verticalalignment='top', 
+            fontsize=10, style='italic', wrap=True)  
+
+
 
     return plt
 
