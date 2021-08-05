@@ -151,12 +151,15 @@ for proc_date in proc_dates[:]:
         
             total_data_cnt = 0
             file_no = 0
+            processing_log += "#processing file Num : {}\n".format(len(df_proc["fullname"]))
             processing_log += "#processing file list\n"
             processing_log += "#file No, total_data_dount, data_count, filename, mean(sst), max(sst), min(sst), min(longitude), max(longitude), min(latitude), max(latitude)\n"
             array_alldata = array_data.copy()
             print('array_alldata is copied...........\n')
             
-            for fullname in df_proc["fullname"] : 
+            for fullname in df_proc["fullname"] :
+
+                file_no += 1
                 
                 try : 
             
@@ -203,8 +206,7 @@ for proc_date in proc_dates[:]:
                             #      .format(df_AVHRR_sst.lon_cood[index], df_AVHRR_sst.lat_cood[index], df_AVHRR_sst.sst[index]))
                             
                             print("{} data added...".format(data_cnt))
-                        
-                        file_no += 1
+
                         total_data_cnt += data_cnt
     
                         processing_log += "{0}, {1}, {2}, {3}, {4:.02f}, {5:.02f}, {6:.02f}, {7:.02f}, {8:.02f}, {9:.02f}, {10:.02f}\n"\
@@ -213,8 +215,7 @@ for proc_date in proc_dates[:]:
                                     np.nanmin(df_AVHRR_sst["longitude"]), np.nanmax(df_AVHRR_sst["longitude"]),
                                     np.nanmin(df_AVHRR_sst["latitude"]), np.nanmax(df_AVHRR_sst["latitude"]))
 
-
-                    
+                    processing_log += "#processing finished!!!\n"
                     #print("array_alldata: {}".format(array_alldata))
                     print("prodessing_log: {}".format(processing_log))
                                                 
