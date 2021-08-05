@@ -215,29 +215,28 @@ for proc_date in proc_dates[:]:
                                     np.nanmin(df_AVHRR_sst["longitude"]), np.nanmax(df_AVHRR_sst["longitude"]),
                                     np.nanmin(df_AVHRR_sst["latitude"]), np.nanmax(df_AVHRR_sst["latitude"]))
 
-                    processing_log += "#processing finished!!!\n"
-                    #print("array_alldata: {}".format(array_alldata))
-                    print("prodessing_log: {}".format(processing_log))
-                                                
-                    np.save('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_alldata.npy'\
-                        .format(save_dir_name, DATAFIELD_NAME, 
-                        proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'), 
-                        str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)), array_alldata)
-                    
-                    with open('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_info.txt'\
-                          .format(save_dir_name, DATAFIELD_NAME,
-                          proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
-                          str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)), 'w') as f:
-                        f.write(processing_log)
-        
-                    print('#'*60)
-                    MODIS_hdf_utilities.write_log(log_file,
-                        '{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8} files are is created.'\
-                        .format(save_dir_name, DATAFIELD_NAME,
-                        proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
-                        str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)))
-                    
                 except Exception as err :
                     MODIS_hdf_utilities.write_log(err_log_file, err)
                     continue
-                    
+
+            processing_log += "#processing finished!!!\n"
+            # print("array_alldata: {}".format(array_alldata))
+            print("prodessing_log: {}".format(processing_log))
+
+            np.save('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_alldata.npy' \
+                    .format(save_dir_name, DATAFIELD_NAME,
+                    proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
+                    str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)), array_alldata)
+
+            with open('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_info.txt' \
+                    .format(save_dir_name, DATAFIELD_NAME,
+                    proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
+                    str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)), 'w') as f:
+                f.write(processing_log)
+
+            print('#' * 60)
+            MODIS_hdf_utilities.write_log(log_file,
+                '{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8} files are is created.' \
+                .format(save_dir_name, DATAFIELD_NAME,
+                proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
+                str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)))
