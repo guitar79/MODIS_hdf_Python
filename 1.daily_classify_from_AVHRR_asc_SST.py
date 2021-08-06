@@ -17,7 +17,7 @@ import sys
 import MODIS_hdf_utilities
 
 arg_mode = True
-#arg_mode =  False
+arg_mode =  False
 
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
@@ -28,24 +28,23 @@ if arg_mode == True :
     from sys import argv # input option
     print("argv: {}".format(argv))
 
-    if len(argv) < 4 :
-        print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
+    if len(argv) < 3 :
+        print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py 0.1 2016")
         sys.exit()
-    elif len(argv) > 4 :
-        print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
+    elif len(argv) > 3 :
+        print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py 0.1 2016")
         sys.exit()
-    elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly' :
-        L3_perid, resolution, year = argv[1], float(argv[2]), int(argv[3])
-        print("{}, {}, {} processing started...".format(argv[1], argv[2], argv[3]))
     else :
-        print("Please input L3_perid and year \n ex) aaa.py daily 0.1 2016")
+        resolution, year = argv[1], float(argv[2])
+        print("{}, {}, processing started...".format(argv[1], argv[2]))
         sys.exit()
 else :
-    L3_perid = 'daily'
-    resolution = 0.1
+    
+    resolution = 1.0
     year = 2019
     
 # Set Datafield name
+L3_perid = 'daily'
 DATAFIELD_NAME = "AVHRR_SST"
 
 #Set lon, lat, resolution
@@ -55,8 +54,8 @@ Slat, Nlat = 20, 55
 
 #set directory
 base_dir_name = '../L2_AVHRR_SST/'
-save_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_{6}/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
-                                                        str(Slat), str(Nlat), str(resolution), L3_perid)
+save_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_date/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
+                                                        str(Slat), str(Nlat), str(resolution))
 if not os.path.exists(save_dir_name):
     os.makedirs(save_dir_name)
     print ('*'*80)
@@ -81,12 +80,8 @@ date2 = s_start_date
 
 while date2 < s_end_date :
     k += 1
-    if L3_perid == 'daily' :
-        date2 = date1 + relativedelta(days=1)
-    elif L3_perid == 'weekly' :
-        date2 = date1 + relativedelta(days=8)
-    elif L3_perid == 'monthly' :
-        date2 = date1 + relativedelta(months=1)
+
+    date2 = date1 + relativedelta(days=1)
 
     date = (date1, date2, k)
     proc_dates.append(date)
@@ -178,6 +173,8 @@ for proc_date in proc_dates[:]:
                     
                     #check dimension    
                     if len(df_AVHRR_sst) == 0 :
+                        processing_log += "{0}, 0, 0, {1}, \n"\
+                            .format(str(file_no), str(fullname))
                         print("There is no sst data...")
                             
                     else :

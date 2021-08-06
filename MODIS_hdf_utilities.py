@@ -95,6 +95,17 @@ def fullname_to_datetime_for_KOSC_AVHRR_SST_asc(fullname):
     filename_dt = datetime(int(fileinfo[0]), int(fileinfo[1][:2]), int(fileinfo[1][2:]), int(fileinfo[2][:2]), int(fileinfo[2][2:]))
     return filename_dt
 
+def fullname_to_datetime_for_L3_npyfile(fullname):
+    ############################################################
+    #for modis hdf file, filename = '../folder/AVHRR_SST_20110901_20110902_115_145_20_55_0.5_alldata.npy'
+    #
+    from datetime import datetime
+    
+    fullname_info = fullname.split('/')
+    fileinfo = fullname_info[-1].split('_')
+    filename_dt = datetime(int(fileinfo[2][0:4]), int(fileinfo[2][4:6]), int(fileinfo[2][6:]))
+    return filename_dt
+
 def fullname_to_datetime_for_KOSC_MODIS_hdf(fullname):
     ############################################################
     #for modis hdf file, filename = '../folder/MYDOCT.2018.0724.0515.aqua-1.hdf'
