@@ -7,49 +7,50 @@ from netCDF4 import Dataset as NetCDFFile
 
 import MODIS_hdf_utilities
 
-arg_mode = True
-arg_mode =  False
 
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
 print ("log_file: {}".format(log_file))
 print ("err_log_file: {}".format(err_log_file))
 
+arg_mode = True
+arg_mode = False
+
 if arg_mode == True :
     from sys import argv # input option
     print("argv: {}".format(argv))
 
-    if len(argv) < 4 :
+    if len(argv) < 2 :
         print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
         sys.exit()
-    elif len(argv) > 4 :
+    elif len(argv) > 2 :
         print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
         sys.exit()
     elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly' :
-        L3_perid, resolution, year = argv[1], float(argv[2]), int(argv[3])
-        print("{}, {}, {} processing started...".format(argv[1], argv[2], argv[3]))
+        L3_perid = argv[1]
+        print("{} processing started...".format(argv[1]))
     else :
-        print("Please input L3_perid and year \n ex) aaa.py daily 0.1 2016")
+        print("Please input L3_perid \n ex) aaa.py daily")
         sys.exit()
 else :
     L3_perid = 'daily'
-    resolution = 1.0
-    year = 2019
     
+    
+L3_perid, resolution = "daily", 0.5
 # Set Datafield name
 DATAFIELD_NAME = "AVHRR_SST"
 
 #Set lon, lat, resolution
 Llon, Rlon = 115, 145
 Slat, Nlat = 20, 55
-#L3_perid, resolution, yr = "daily", 0.1, 2019
+
 
 #set directory
 base_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_{6}/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
                                                         str(Slat), str(Nlat), str(resolution), L3_perid)
 save_dir_name = base_dir_name
 #save_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_{6}/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
-#                                                        str(Slat), str(Nlat), str(resolution), L3_perid)
+                                                        #str(Slat), str(Nlat), str(resolution), L3_perid)
 
 #### make dataframe from file list
 fullnames = sorted(glob(os.path.join(base_dir_name, '*mean.nc')))

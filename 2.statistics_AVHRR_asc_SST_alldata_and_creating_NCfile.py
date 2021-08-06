@@ -16,13 +16,13 @@ import os
 import sys
 import MODIS_hdf_utilities
 
-arg_mode = True
-#arg_mode = False
-
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
 print ("log_file: {}".format(log_file))
 print ("err_log_file: {}".format(err_log_file))
+
+arg_mode = True
+#arg_mode = False
 
 if arg_mode == True :
     from sys import argv # input option
