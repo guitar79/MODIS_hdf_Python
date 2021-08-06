@@ -51,12 +51,18 @@ DATAFIELD_NAME = "AVHRR_SST"
 Llon, Rlon = 115, 145
 Slat, Nlat = 20, 55
 
+# Set Datafield name
+DATAFIELD_NAME = "Optical_Depth_Land_And_Ocean"
+
+#Set lon, lat, resolution
+Llon, Rlon = 110, 150
+Slat, Nlat = 10, 60
+
 #set directory
 base_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_date/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
                                                         str(Slat), str(Nlat), str(resolution))
 save_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_{6}/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
                                                         str(Slat), str(Nlat), str(resolution), L3_perid)
-
 if not os.path.exists(save_dir_name):
     os.makedirs(save_dir_name)
     print('*' * 80)
@@ -132,15 +138,15 @@ for proc_date in proc_dates[:]:
             output_fullname_el = output_fullname.split("/")
             output_fileneme_el = output_fullname_el[-1].split("_")
             
-            alldata_3Ds = np.empty((0, int((Rlon-Llon)/resolution), int((Nlat-Slat)/resolution)))
+            alldata_3Ds = np.empty((0, int((Rlon-Llon)/resolution)+1, int((Nlat-Slat)/resolution)+1))
             for fullname in df_proc["fullname"] :
                 #fullname = df_proc["fullname"][0]
-        
+                       
                 alldata = np.load(fullname, allow_pickle=True)
                 
-                if len(alldata.shape) == 3 : 
-                    print("error")
-                    alldata = np.empty((int((Rlon-Llon)/resolution), int((Nlat-Slat)/resolution)))
+                if alldata.size == 0 : 
+                    print("alldata.size : {}".format(alldata.size))
+                    
                 else : 
                     for i in range(alldata.shape[0]):
                         for j in range(alldata.shape[1]):
@@ -148,25 +154,30 @@ for proc_date in proc_dates[:]:
                                 alldata[i,j] = np.nan
                             else : 
                                 alldata[i,j] = np.mean(list(map(lambda x:x[1], alldata[i,j])))
+            
+                    if alldata_3Ds.shape[0] == 0 : 
+                        alldata_3Ds = alldata.reshape(1, alldata.shape[0], alldata.shape[1])
+                        print("alldata_3Ds.shape : True\n{}".format(alldata_3Ds.shape))
+                    else :
+                        alldata_3Ds = np.append(alldata_3Ds, alldata.reshape(1, alldata.shape[0], alldata.shape[1]), axis=0)
+                        print("alldata_3Ds.shape : Flase\n{}".format(alldata_3Ds.shape))
                 
-                if alldata_3Ds.shape[0] == 0 : 
-                    alldata_3Ds = alldata.reshape(1, alldata.shape[0], alldata.shape[1])
-                    print("alldata_3Ds.shape : True\n{}".format(alldata_3Ds.shape))
-                else :
-                    alldata_3Ds = np.append(alldata_3Ds, alldata.reshape(1, alldata.shape[0], alldata.shape[1]), axis=0)
-                    print("alldata_3Ds.shape : Flase\n{}".format(alldata_3Ds.shape))
-                
+            print("alldata_3Ds.shape : final\n{}".format(alldata_3Ds.shape))
+            
             alldata_3Ds = alldata_3Ds.astype('float64')
                         
             print("alldata_3Ds.shape : final\n{}".format(alldata_3Ds.shape))
             alldata = np.nanmean(alldata_3Ds, axis=0, keepdims=True)
             print("alldata.shape :\n{}".format(alldata.shape))
             print("alldata :\n{}".format(alldata))
-
-            alldata = alldata.reshape(alldata.shape[1], alldata.shape[2])
+            
+            #alldata = alldata.reshape(alldata.shape[1], alldata.shape[2])
             #alldata = alldata.transpose()
             print("alldata.shape :\n{}".format(alldata.shape))
             print("alldata :\n{}".format(alldata))
+            
+            # making netCDF file...
+            print("Starting {} file...".format(output_fullname))
             ds = nc.Dataset('{0}'.format(output_fullname), 'w', format='NETCDF4')
             
             #time = ds.createDimension('time', filename_el[2])
@@ -178,19 +189,15 @@ for proc_date in proc_dates[:]:
             
             lons = ds.createVariable('longitude', 'f4', ('longitude',))
             lats = ds.createVariable('latitude', 'f4', ('latitude',))
-            SST = ds.createVariable('SST', 'f4', ('time', 'latitude', 'longitude',))
-            SST.units = 'degree'
+            MODIS_AOD = ds.createVariable('MODIS_AOD', 'f4', ('time', 'latitude', 'longitude',))
+            MODIS_AOD.units = ''
             
             lons[:] = np.arange(Llon, Rlon+resolution, resolution)
             lats[:] = np.arange(Slat, Nlat+resolution, resolution)
-            #lons[:] = np.arange(Llon, Rlon+resolution, resolution)
-            #lats[:] = np.arange(Slat, Nlat+resolution, resolution)
+            #lons[:] = np.arange(Llon, Rlon, resolution)
+            #lats[:] = np.arange(Slat, Nlat, resolution)
             
-            SST[0, :, :] = alldata.transpose()
+            #MODIS_AOD[0, :, :] = alldata
+            MODIS_AOD[0, :, :] = alldata.transpose()
             
-            #print('var size after adding first data', value.shape)
-            #xval = np.linspace(0.5, 5.0, alldata.shape[1]-1)
-            #yval = np.linspace(0.5, 5.0, alldata.shape[0]-1)
-            #value[1, :, :] = np.array(xval.reshape(-1, 1) + yval)
-    
             ds.close()

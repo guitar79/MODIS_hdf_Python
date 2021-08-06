@@ -21,10 +21,10 @@ if arg_mode == True :
     print("argv: {}".format(argv))
 
     if len(argv) < 2 :
-        print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
+        print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py daily")
         sys.exit()
     elif len(argv) > 2 :
-        print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.1 2016")
+        print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py daily")
         sys.exit()
     elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly' :
         L3_perid = argv[1]
@@ -33,10 +33,8 @@ if arg_mode == True :
         print("Please input L3_perid \n ex) aaa.py daily")
         sys.exit()
 else :
-    L3_perid = 'daily'
-    
-    
-L3_perid, resolution = "daily", 0.5
+    L3_perid, resolution = "monthly", 0.5
+
 # Set Datafield name
 DATAFIELD_NAME = "AVHRR_SST"
 
@@ -44,6 +42,12 @@ DATAFIELD_NAME = "AVHRR_SST"
 Llon, Rlon = 115, 145
 Slat, Nlat = 20, 55
 
+#Set Datafield name
+DATAFIELD_NAME = "Optical_Depth_Land_And_Ocean"
+
+#Set lon, lat, resolution
+Llon, Rlon = 110, 150
+Slat, Nlat = 10, 60
 
 #set directory
 base_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_{6}/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
@@ -68,8 +72,7 @@ for fullname in fullnames :
     lat = nc_data.variables['latitude'][:]
     lon = nc_data.variables['longitude'][:]
     time = nc_data.variables['time'][:]
-    SST = nc_data.variables['SST'][:] # SST
-    
+    MODIS_AOD = nc_data.variables['MODIS_AOD'][:] # SST
     
     if False and os.path.exists("{0}{1}_{2}_hist.pdf"\
         .format(base_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME)) :
@@ -77,7 +80,7 @@ for fullname in fullnames :
               .format(save_dir_name, fullname_el[-1][:-4], DATAFIELD_NAME))
     else : 
         try :        
-            plt_hist = MODIS_hdf_utilities.draw_histogram_SST_NC(SST, lon, lat, fullname, DATAFIELD_NAME)
+            plt_hist = MODIS_hdf_utilities.draw_histogram_SST_NC(MODIS_AOD, lon, lat, fullname, DATAFIELD_NAME)
             plt_hist.savefig('{0}_hist.pdf'.format(fullname[:-3]))
             print('{0}_hist.pdf is created...'.format(fullname[:-3]))
             plt_hist.close()
@@ -92,7 +95,7 @@ for fullname in fullnames :
         
         try :        
         
-            plt_map = MODIS_hdf_utilities.draw_map_SST_nc(SST, lon, lat, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat)
+            plt_map = MODIS_hdf_utilities.draw_map_SST_nc(MODIS_AOD, lon, lat, save_dir_name, fullname, DATAFIELD_NAME, Llon, Rlon, Slat, Nlat)
             
             plt_map.savefig('{0}_map.png'.format(fullname[:-3]))
             print('{0}_map.png is created...'.format(fullname[:-3]))

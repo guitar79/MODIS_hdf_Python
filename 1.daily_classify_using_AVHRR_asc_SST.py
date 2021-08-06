@@ -35,16 +35,14 @@ if arg_mode == True :
         print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py 0.1 2016")
         sys.exit()
     else :
-        resolution, year = argv[1], float(argv[2])
+        L3_perid, resolution, year = 'daily', argv[1], float(argv[2])
         print("{}, {}, processing started...".format(argv[1], argv[2]))
         sys.exit()
 else :
     
-    resolution = 1.0
-    year = 2019
+    L3_perid, resolution, year = 'daily', 0.5, 2019
     
 # Set Datafield name
-L3_perid = 'daily'
 DATAFIELD_NAME = "AVHRR_SST"
 
 #Set lon, lat, resolution
@@ -67,9 +65,6 @@ else :
 proc_dates = []
 
 #make processing period tuple
-
-dir_name = base_dir_name + str(year) + '/'
-
 from dateutil.relativedelta import relativedelta
 s_start_date = datetime(year, 1, 1) #convert startdate to date type
 s_end_date = datetime(year+1, 1, 1)
@@ -219,7 +214,15 @@ for proc_date in proc_dates[:]:
             processing_log += "#processing finished!!!\n"
             # print("array_alldata: {}".format(array_alldata))
             print("prodessing_log: {}".format(processing_log))
-
+            
+            array_alldata = np.array(array_alldata)
+            #array_alldata1 = np.array(array_alldata)
+            #array_alldata[:,:,0] = [1]
+            #array_alldata = np.nan
+            #array_alldata[array_alldata==np.empty]=np.nan
+            
+            print("array_alldata: \n{}".format(array_alldata))
+            print("array_alldata.shape: {}".format(array_alldata.shape))
             np.save('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_alldata.npy' \
                     .format(save_dir_name, DATAFIELD_NAME,
                     proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
