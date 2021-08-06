@@ -5,7 +5,7 @@
 #runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
 #cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
 #conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
-#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python classify_AVHRR_asc_SST.py daily 1.0 2019
+#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python 2.statistics_AVHRR_asc_SST_alldata_and_creating_NCfile.py daily
 '''
 
 from glob import glob
@@ -17,7 +17,7 @@ import sys
 import MODIS_hdf_utilities
 
 arg_mode = True
-arg_mode = False
+#arg_mode = False
 
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
@@ -48,10 +48,10 @@ else :
 DATAFIELD_NAME = "AVHRR_SST"
 
 #Set lon, lat, resolution
-L3_perid = 'weekly'
+#L3_perid = 'daily'
 Llon, Rlon = 115, 145
 Slat, Nlat = 20, 55
-resolution = 1.0
+resolution = 0.5
 
 #set directory
 base_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_date/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
@@ -134,7 +134,7 @@ for proc_date in proc_dates[:]:
             output_fullname_el = output_fullname.split("/")
             output_fileneme_el = output_fullname_el[-1].split("_")
             
-            #alldatas = np.array([])
+            alldata_3Ds = np.empty((0, int((Rlon-Llon)/resolution), int((Nlat-Slat)/resolution)))
             for fullname in df_proc["fullname"] :
         
                 alldata = np.load(fullname, allow_pickle=True)
@@ -146,8 +146,6 @@ for proc_date in proc_dates[:]:
                         else : 
                             alldata[i,j] = np.mean(list(map(lambda x:x[1], alldata[i,j])))
                 
-                if 'alldata_3Ds' not in locals():
-                    alldata_3Ds = np.empty((0, alldata.shape[0], alldata.shape[1]))
                 if alldata_3Ds.shape[0] == 0 : 
                     alldata_3Ds = alldata.reshape(1, alldata.shape[0], alldata.shape[1])
                     print("alldata_3Ds.shape : True\n{}".format(alldata_3Ds.shape))
@@ -157,8 +155,11 @@ for proc_date in proc_dates[:]:
                 
             print("alldata_3Ds.shape : final\n{}".format(alldata_3Ds.shape))
             alldata = np.mean(alldata_3Ds, axis=0, keepdims=True)
-                            
-            alldata = alldata.transpose()                
+            print("alldata.shape :\n{}".format(alldata.shape))
+            print("alldata :\n{}".format(alldata))
+
+            alldata = alldata.reshape(alldata.shape[1], alldata.shape[2])
+            #alldata = alldata.transpose()
             print("alldata.shape :\n{}".format(alldata.shape))
             print("alldata :\n{}".format(alldata))
             ds = nc.Dataset('{0}'.format(output_fullname), 'w', format='NETCDF4')
