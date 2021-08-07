@@ -38,7 +38,6 @@ if arg_mode == True :
     else :
         L3_perid, resolution, year = "daily", float(argv[1]), int(argv[2])
         print("{}, {}, processing started...".format(argv[1], argv[2]))
-        sys.exit()
 else :
     L3_perid, resolution, year = "daily", 0.5, 2000
     
