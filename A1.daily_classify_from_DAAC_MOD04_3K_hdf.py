@@ -5,7 +5,8 @@
 #runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
 #cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
 #conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
-#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python classify_AVHRR_asc_SST.py daily 1.0 2019
+#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 1.0 2019
+#conda activate MODIS_hdf_Python_env && cd /mnt/6TB1/RS_data/MODIS_hdf_Python/ && A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 1.0 2019
 '''
 
 
@@ -17,7 +18,7 @@ import sys
 import MODIS_hdf_utilities
 
 arg_mode = True
-arg_mode =  False
+#arg_mode =  False
 
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
@@ -35,7 +36,7 @@ if arg_mode == True :
         print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py 0.1 2016")
         sys.exit()
     else :
-        L3_perid, resolution, year = "daily", argv[1], float(argv[2])
+        L3_perid, resolution, year = "daily", float(argv[1]), int(argv[2])
         print("{}, {}, processing started...".format(argv[1], argv[2]))
         sys.exit()
 else :
