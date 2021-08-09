@@ -35,7 +35,7 @@ if arg_mode == True :
         print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py 0.1 2016")
         sys.exit()
     else :
-        L3_perid, resolution, year = 'daily', argv[1], float(argv[2])
+        L3_perid, resolution, year = 'daily', float(argv[1]), int(argv[2])
         print("{}, {}, processing started...".format(argv[1], argv[2]))
 else :
     
