@@ -121,8 +121,9 @@ for proc_date in proc_dates[:]:
                     proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
                     str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution))
 
-        if False and os.path.exists('{0}'.format(output_fullname)) :
-                print('{0} is already exist...'.format(output_fullname))
+        if os.path.exists('{0}'.format(output_fullname)) :
+            # or False :
+            print('{0} is already exist...'.format(output_fullname))
                 
         else :         
             #if os.path.exists('{0}'.format(output_fullname)):
