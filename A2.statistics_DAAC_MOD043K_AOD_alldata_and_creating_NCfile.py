@@ -184,10 +184,10 @@ for proc_date in proc_dates[:]:
             MODIS_AOD = ds.createVariable('MODIS_AOD', 'f4', ('time', 'latitude', 'longitude',))
             MODIS_AOD.units = ''
             
-            lons[:] = np.arange(Llon, Rlon+resolution, resolution)
-            lats[:] = np.arange(Slat, Nlat+resolution, resolution)
-            #lons[:] = np.arange(Llon, Rlon, resolution)
-            #lats[:] = np.arange(Slat, Nlat, resolution)
+            #lons[:] = np.arange(Llon, Rlon+resolution, resolution)
+            #lats[:] = np.arange(Slat, Nlat+resolution, resolution)
+            lons[:] = np.arange(Llon, Rlon, resolution)
+            lats[:] = np.arange(Slat, Nlat, resolution)
             
             #MODIS_AOD[0, :, :] = alldata
             MODIS_AOD[0, :, :] = alldata.transpose()
