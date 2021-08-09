@@ -4,8 +4,8 @@
 #############################################################
 #runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
 #cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
-#conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
-#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python 2.statistics_AVHRR_asc_SST_alldata_and_creating_NCfile.py daily
+#conda activate MODIS_hdf_Python_env && cd '/mnt/6TB1/RS_data/KOSC/MODIS_hdf_Python' && python 2.statistics_AAC_MOD043K_AOD_alldata_and_creating_NCfile.py daily 0.05
+#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python 2.statistics_AAC_MOD043K_AOD_alldata_and_creating_NCfile.py daily 0.05
 '''
 
 from glob import glob
@@ -22,34 +22,27 @@ print ("log_file: {}".format(log_file))
 print ("err_log_file: {}".format(err_log_file))
 
 arg_mode = True
-arg_mode = False
+#arg_mode = False
 
-if arg_mode == True :
-    from sys import argv # input option
+if arg_mode == True:
+    from sys import argv  # input option
+
     print("argv: {}".format(argv))
 
-    if len(argv) < 2 :
-        print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py daily")
+    if len(argv) < 3:
+        print("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.5")
         sys.exit()
-    elif len(argv) > 2 :
-        print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py daily")
+    elif len(argv) > 3:
+        print("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.5")
         sys.exit()
-    elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly' :
-        L3_perid = argv[1]
-        print("{} processing started...".format(argv[1]))
-    else :
-        print("Please input L3_perid \n ex) aaa.py daily")
+    elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly':
+        L3_perid, resolution = argv[1], float(argv[2])
+        print("{} processing started...".format(argv[1]), argv[2])
+    else:
+        print("Please input L3_perid \n ex) aaa.py daily 0.5")
         sys.exit()
-else :
-    L3_perid, resolution = 'monthly', 0.5
-    
-
-# Set Datafield name
-DATAFIELD_NAME = "AVHRR_SST"
-
-#Set lon, lat, resolution
-Llon, Rlon = 115, 145
-Slat, Nlat = 20, 55
+else:
+    L3_perid, resolution = 'monthly', 0.05
 
 # Set Datafield name
 DATAFIELD_NAME = "Optical_Depth_Land_And_Ocean"
@@ -163,21 +156,20 @@ for proc_date in proc_dates[:]:
                         print("alldata_3Ds.shape : Flase\n{}".format(alldata_3Ds.shape))
                 
             print("alldata_3Ds.shape : final\n{}".format(alldata_3Ds.shape))
-            
+
             alldata_3Ds = alldata_3Ds.astype('float64')
-                        
+
             print("alldata_3Ds.shape : final\n{}".format(alldata_3Ds.shape))
             alldata = np.nanmean(alldata_3Ds, axis=0, keepdims=True)
+
+            # alldata1 = np.nan if np.all(i!=i) else np.nanmean(i)
             print("alldata.shape :\n{}".format(alldata.shape))
             print("alldata :\n{}".format(alldata))
-            
-            #alldata = alldata.reshape(alldata.shape[1], alldata.shape[2])
-            #alldata = alldata.transpose()
+
+            alldata = alldata.reshape(alldata.shape[1], alldata.shape[2])
+            # alldata = alldata.transpose()
             print("alldata.shape :\n{}".format(alldata.shape))
             print("alldata :\n{}".format(alldata))
-            
-            # making netCDF file...
-            print("Starting {} file...".format(output_fullname))
             ds = nc.Dataset('{0}'.format(output_fullname), 'w', format='NETCDF4')
             
             #time = ds.createDimension('time', filename_el[2])
