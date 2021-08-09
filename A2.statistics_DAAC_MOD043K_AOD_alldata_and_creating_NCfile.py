@@ -38,7 +38,7 @@ if arg_mode == True:
         sys.exit()
     elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly':
         L3_perid, resolution = argv[1], float(argv[2])
-        print("{} processing started...".format(argv[1]), argv[2])
+        print("{} processing started...".format(argv[1], argv[2]))
     else:
         print("Please input L3_perid \n ex) aaa.py daily 0.5")
         sys.exit()
