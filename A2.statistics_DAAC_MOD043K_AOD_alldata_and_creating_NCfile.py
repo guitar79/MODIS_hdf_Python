@@ -154,15 +154,14 @@ for proc_date in proc_dates[:]:
                         print("alldata_3Ds.shape : True\n{}".format(alldata_3Ds.shape))
                     else :
                         alldata_3Ds = np.append(alldata_3Ds, alldata.reshape(1, alldata.shape[0], alldata.shape[1]), axis=0)
-                        print("alldata_3Ds.shape : Flase\n{}".format(alldata_3Ds.shape))
+                        print("alldata_3Ds.shape : False\n{}".format(alldata_3Ds.shape))
                 
             print("alldata_3Ds.shape : final\n{}".format(alldata_3Ds.shape))
 
             alldata_3Ds = alldata_3Ds.astype('float64')
 
-            print("alldata_3Ds.shape : final\n{}".format(alldata_3Ds.shape))
             alldata = np.nanmean(alldata_3Ds, axis=0, keepdims=True)
-
+            print("alldata_3Ds.shape : final\n{}".format(alldata_3Ds.shape))
             # alldata1 = np.nan if np.all(i!=i) else np.nanmean(i)
             print("alldata.shape :\n{}".format(alldata.shape))
             print("alldata :\n{}".format(alldata))

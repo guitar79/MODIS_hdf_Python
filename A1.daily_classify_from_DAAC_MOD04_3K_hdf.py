@@ -366,8 +366,7 @@ for proc_date in proc_dates[:]:
             
             if array_alldata.size == 0 :
                 print("array_alldata.size == 0")
-            else : 
-                
+            else :
                 np.save('{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_alldata.npy' \
                         .format(save_dir_name, DATAFIELD_NAME,
                         proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
