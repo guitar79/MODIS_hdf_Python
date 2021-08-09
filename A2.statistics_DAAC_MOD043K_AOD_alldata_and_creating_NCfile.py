@@ -190,7 +190,6 @@ for proc_date in proc_dates[:]:
             #lons[:] = np.arange(Llon, Rlon, resolution)
             #lats[:] = np.arange(Slat, Nlat, resolution)
             
-            #MODIS_AOD[0, :, :] = alldata
             MODIS_AOD[0, :, :] = alldata.transpose()
             
             ds.close()
