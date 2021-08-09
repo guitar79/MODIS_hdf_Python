@@ -4,9 +4,7 @@ import os
 import sys
 
 from netCDF4 import Dataset as NetCDFFile 
-
 import MODIS_hdf_utilities
-
 
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
@@ -33,7 +31,7 @@ if arg_mode == True :
         print("Please input L3_perid \n ex) aaa.py daily")
         sys.exit()
 else :
-    L3_perid, resolution = "daily", 0.5
+    L3_perid, resolution = "monthly", 0.5
 
 # Set Datafield name
 DATAFIELD_NAME = "AVHRR_SST"

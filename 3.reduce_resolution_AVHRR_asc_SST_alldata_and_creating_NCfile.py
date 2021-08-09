@@ -5,7 +5,7 @@
 #runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
 #cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
 #conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
-#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python 2.statistics_AVHRR_asc_SST_alldata_and_creating_NCfile.py daily 0.5
+#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python 2.statistics_AVHRR_asc_SST_alldata_and_creating_NCfile.py daily
 '''
 
 from glob import glob
@@ -22,41 +22,40 @@ print ("log_file: {}".format(log_file))
 print ("err_log_file: {}".format(err_log_file))
 
 arg_mode = True
-#arg_mode = False
+arg_mode = False
 
 if arg_mode == True :
     from sys import argv # input option
     print("argv: {}".format(argv))
 
-    if len(argv) < 3 :
-        print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.5")
+    if len(argv) < 4 :
+        print ("len(argv) < 4\nPlease input L3_perid and year \n ex) aaa.py daily Ori_resolution resolution")
         sys.exit()
-    elif len(argv) > 3 :
-        print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py daily 0.5")
+    elif len(argv) > 4 :
+        print ("len(argv) < 4\nPlease input L3_perid and year \n ex) aaa.py daily Ori_resolution resolution")
         sys.exit()
     elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly' :
-        L3_perid, resolution = argv[1], float(argv[2])
-        print("{} processing started...".format(argv[1]), argv[2])
-    else :
-        print("Please input L3_perid \n ex) aaa.py daily 0.5")
+        L3_perid, Ori_resolution, resolution = argv[1], argv[1], argv[2] 
+        print("{} files reducuing process started... {} to {}".format(argv[1], argv[2], argv[3]))
+    else :  
+        print ("len(argv) < 4\nPlease input L3_perid and year \n ex) aaa.py daily Ori_resolution resolution")
         sys.exit()
 else :
-    L3_perid, resolution = 'monthly', 0.5
-    
+    L3_perid, Ori_resolution, resolution = "daily", 0.05, 0.5
 
 # Set Datafield name
 DATAFIELD_NAME = "AVHRR_SST"
 
-#Set lon, lat, resolution
+#Set lon, lat
 Llon, Rlon = 115, 145
 Slat, Nlat = 20, 55
 
 #set directory
 base_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_{6}/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
-                                                        str(Slat), str(Nlat), str(resolution), "date")
+                                                        str(Slat), str(Nlat), str(Ori_resolution), "date")
+#save_dir_name = base_dir_name
 save_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_{6}/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
                                                         str(Slat), str(Nlat), str(resolution), L3_perid)
-
 if not os.path.exists(save_dir_name):
     os.makedirs(save_dir_name)
     print('*' * 80)
@@ -66,10 +65,9 @@ else:
     print(save_dir_name, 'is exist')
 
 proc_dates = []
-
 # make processing period tuple
 from dateutil.relativedelta import relativedelta
-s_start_date = datetime(2000, 1, 1)  # convert startdate to date type
+s_start_date = datetime(2011, 1, 1)  # convert startdate to date type
 s_end_date = datetime(2022, 1, 1)
 
 k = 0
@@ -106,7 +104,7 @@ print("fullnames_dt:\n{}".format(fullnames_dt))
 print("len(fullnames_dt):\n{}".format(len(fullnames_dt)))
 
 for proc_date in proc_dates[:]:
-# proc_date = proc_dates[55]
+# proc_date = proc_dates[280]
     df_proc = df[(df['fullname_dt'] >= proc_date[0]) & (df['fullname_dt'] < proc_date[1])]
     if len(df_proc) == 0 :
         print("There is no data in {0} - {1} ...\n"\
@@ -121,9 +119,8 @@ for proc_date in proc_dates[:]:
                     proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
                     str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution))
 
-        if  os.path.exists('{0}'.format(output_fullname)) :
-            #or False :
-            print('{0} is already exist...'.format(output_fullname))
+        if False and os.path.exists('{0}'.format(output_fullname)) :
+                print('{0} is already exist...'.format(output_fullname))
                 
         else :         
             #if os.path.exists('{0}'.format(output_fullname)):
@@ -141,7 +138,7 @@ for proc_date in proc_dates[:]:
                 
                 if len(alldata.shape) == 3 : 
                     print("error")
-                    alldata = np.empty((int((Rlon-Llon)/resolution), int((Nlat-Slat)/resolution)))
+                    alldata = np.empty((int((Rlon-Llon)/Ori_resolution), int((Nlat-Slat)/Ori_resolution)))
                 else : 
                     for i in range(alldata.shape[0]):
                         for j in range(alldata.shape[1]):
@@ -158,15 +155,22 @@ for proc_date in proc_dates[:]:
                     print("alldata_3Ds.shape : Flase\n{}".format(alldata_3Ds.shape))
                 
             alldata_3Ds = alldata_3Ds.astype('float64')
-                        
-            print("alldata_3Ds.shape : final\n{}".format(alldata_3Ds.shape))
-            alldata = np.nanmean(alldata_3Ds, axis=0, keepdims=True)
             
-            #alldata1 = np.nan if np.all(i!=i) else np.nanmean(i) 
+            #if alldata_3Ds.size == 0 :
+            #    alldata = alldata.reshape(alldata.shape[1], alldata.shape[2])
+            #else : 
+            #    print("alldata_3Ds.shape : final\n{}".format(alldata_3Ds.shape))
+            #    alldata = np.nanmean(alldata_3Ds, axis=0, keepdims=True)
+            alldata = np.nanmean(alldata_3Ds, axis=0, keepdims=True)
             print("alldata.shape :\n{}".format(alldata.shape))
             print("alldata :\n{}".format(alldata))
+            
+            from skimage.util.shape import view_as_windows
+            alldata1 = view_as_windows(alldata, window_shape=(resolution/Ori_resolution, resolution/Ori_resolution), step=int(resolution/Ori_resolution))
 
-            alldata = alldata.reshape(alldata.shape[1], alldata.shape[2])
+            #alldata = np.array(list(map(lambda x: [np.nanmean(i) for i in x], alldata1)))
+            alldata = np.array(list(map(lambda x: [np.nan if np.all(i!=i) else np.nanmean(i) for i in x], alldata1)))
+    
             #alldata = alldata.transpose()
             print("alldata.shape :\n{}".format(alldata.shape))
             print("alldata :\n{}".format(alldata))
@@ -184,8 +188,8 @@ for proc_date in proc_dates[:]:
             SST = ds.createVariable('SST', 'f4', ('time', 'latitude', 'longitude',))
             SST.units = 'degree'
             
-            lons[:] = np.arange(Llon, Rlon+resolution, resolution)
-            lats[:] = np.arange(Slat, Nlat+resolution, resolution)
+            lons[:] = np.arange(Llon, Rlon, resolution)
+            lats[:] = np.arange(Slat, Nlat, resolution)
             #lons[:] = np.arange(Llon, Rlon+resolution, resolution)
             #lats[:] = np.arange(Slat, Nlat+resolution, resolution)
             
