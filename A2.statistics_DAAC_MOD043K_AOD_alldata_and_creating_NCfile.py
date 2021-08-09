@@ -4,8 +4,9 @@
 #############################################################
 #runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
 #cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
-#conda activate MODIS_hdf_Python_env && cd '/mnt/6TB1/RS_data/KOSC/MODIS_hdf_Python' && python 2.statistics_AAC_MOD043K_AOD_alldata_and_creating_NCfile.py daily 0.05
-#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python 2.statistics_AAC_MOD043K_AOD_alldata_and_creating_NCfile.py daily 0.05
+#conda activate MODIS_hdf_Python_env && cd '/mnt/6TB1/RS_data/MODIS_AOD/MODIS_hdf_Python' && python 2.statistics_DAAC_MOD043K_AOD_alldata_and_creating_NCfile.py daily 0.05
+#conda activate MODIS_hdf_Python_env && cd '/mnt/6TB1/RS_data/KOSC/MODIS_hdf_Python' && python A2.statistics_DAAC_MOD043K_AOD_alldata_and_creating_NCfile.py daily 0.05
+#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python A2.statistics_DAAC_MOD043K_AOD_alldata_and_creating_NCfile.py daily 0.05
 '''
 
 from glob import glob
@@ -184,10 +185,10 @@ for proc_date in proc_dates[:]:
             MODIS_AOD = ds.createVariable('MODIS_AOD', 'f4', ('time', 'latitude', 'longitude',))
             MODIS_AOD.units = ''
             
-            #lons[:] = np.arange(Llon, Rlon+resolution, resolution)
-            #lats[:] = np.arange(Slat, Nlat+resolution, resolution)
-            lons[:] = np.arange(Llon, Rlon, resolution)
-            lats[:] = np.arange(Slat, Nlat, resolution)
+            lons[:] = np.arange(Llon, Rlon+resolution, resolution)
+            lats[:] = np.arange(Slat, Nlat+resolution, resolution)
+            #lons[:] = np.arange(Llon, Rlon, resolution)
+            #lats[:] = np.arange(Slat, Nlat, resolution)
             
             #MODIS_AOD[0, :, :] = alldata
             MODIS_AOD[0, :, :] = alldata.transpose()
