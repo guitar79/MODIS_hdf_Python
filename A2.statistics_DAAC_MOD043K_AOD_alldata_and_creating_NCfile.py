@@ -4,8 +4,7 @@
 #############################################################
 #runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
 #cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
-#conda activate MODIS_hdf_Python_env && cd '/mnt/6TB1/RS_data/MODIS_AOD/MODIS_hdf_Python' && python 2.statistics_DAAC_MOD043K_AOD_alldata_and_creating_NCfile.py daily 0.05
-#conda activate MODIS_hdf_Python_env && cd '/mnt/6TB1/RS_data/KOSC/MODIS_hdf_Python' && python A2.statistics_DAAC_MOD043K_AOD_alldata_and_creating_NCfile.py daily 0.05
+#conda activate MODIS_hdf_Python_env && cd '/mnt/6TB1/RS_data/MODIS_AOD/MODIS_hdf_Python' && python A2.statistics_DAAC_MOD043K_AOD_alldata_and_creating_NCfile.py daily 0.05
 #conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python A2.statistics_DAAC_MOD043K_AOD_alldata_and_creating_NCfile.py daily 0.05
 '''
 
@@ -38,12 +37,12 @@ if arg_mode == True:
         sys.exit()
     elif argv[1] == 'daily' or argv[1] == 'weekly' or argv[1] == 'monthly':
         L3_perid, resolution = argv[1], float(argv[2])
-        print("{} processing started...".format(argv[1], argv[2]))
+        print("{} {} processing started...".format(argv[1], argv[2]))
     else:
         print("Please input L3_perid \n ex) aaa.py daily 0.5")
         sys.exit()
 else:
-    L3_perid, resolution = 'monthly', 0.05
+    L3_perid, resolution = 'daily', 0.5
 
 # Set Datafield name
 DATAFIELD_NAME = "Optical_Depth_Land_And_Ocean"
@@ -185,8 +184,8 @@ for proc_date in proc_dates[:]:
             MODIS_AOD = ds.createVariable('MODIS_AOD', 'f4', ('time', 'latitude', 'longitude',))
             MODIS_AOD.units = ''
             
-            lons[:] = np.arange(Llon, Rlon+resolution, resolution)
-            lats[:] = np.arange(Slat, Nlat+resolution, resolution)
+            lons[:] = np.arange(Llon, Rlon+resolution*0.1, resolution)
+            lats[:] = np.arange(Slat, Nlat+resolution*0.1, resolution)
             #lons[:] = np.arange(Llon, Rlon, resolution)
             #lats[:] = np.arange(Slat, Nlat, resolution)
             
