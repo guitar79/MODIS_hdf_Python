@@ -17,7 +17,7 @@ import sys
 import MODIS_hdf_utilities
 
 arg_mode = True
-arg_mode = False
+#arg_mode = False
 
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
@@ -37,7 +37,6 @@ if arg_mode == True :
     else :
         L3_perid, resolution, year = 'daily', argv[1], float(argv[2])
         print("{}, {}, processing started...".format(argv[1], argv[2]))
-        sys.exit()
 else :
     
     L3_perid, resolution, year = 'daily', 0.5, 2019
