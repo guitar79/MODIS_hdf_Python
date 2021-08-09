@@ -3,7 +3,7 @@
 '''
 #############################################################
 #runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
-#conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.5
+#conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python 2.statistics_AVHRR_asc_SST_alldata_and_creating_NCfile.py daily 0.5
 #conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python 2.statistics_AVHRR_asc_SST_alldata_and_creating_NCfile.py daily 0.5
 '''
 
