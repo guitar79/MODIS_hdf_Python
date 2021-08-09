@@ -3,8 +3,7 @@
 '''
 #############################################################
 #runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
-#cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
-#conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
+#conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.5
 #conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && python 2.statistics_AVHRR_asc_SST_alldata_and_creating_NCfile.py daily 0.5
 '''
 
@@ -155,7 +154,7 @@ for proc_date in proc_dates[:]:
                     print("alldata_3Ds.shape : True\n{}".format(alldata_3Ds.shape))
                 else :
                     alldata_3Ds = np.append(alldata_3Ds, alldata.reshape(1, alldata.shape[0], alldata.shape[1]), axis=0)
-                    print("alldata_3Ds.shape : Flase\n{}".format(alldata_3Ds.shape))
+                    print("alldata_3Ds.shape : False\n{}".format(alldata_3Ds.shape))
                 
             alldata_3Ds = alldata_3Ds.astype('float64')
                         

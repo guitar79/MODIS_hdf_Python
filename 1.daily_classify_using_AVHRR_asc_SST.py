@@ -17,7 +17,7 @@ import sys
 import MODIS_hdf_utilities
 
 arg_mode = True
-arg_mode =  False
+arg_mode = False
 
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"

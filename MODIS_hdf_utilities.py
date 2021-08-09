@@ -265,21 +265,41 @@ def draw_histogram_SST_NC(SST, longitude, latitude, fullname, DATAFIELD_NAME):
     
     plt.title("Histogram of {0}".format(DATAFIELD_NAME), fontsize=20, y=1.03)
     
-    plt.hist(SST[0,:,:])
-    plt.grid(True)
+    ys, xs, patches =plt.hist(SST[0,:,:])
+    plt.xlim(int(np.min(xs)/10)*10, (int(np.max(xs)/10)+1)*10)
+    plt.ylim(int(np.min(ys)/10)*10, (int(np.max(ys)/10)+1)*10)
     
-    plt.text(0, -0.25, "Maximun value: {0:.1f}\nMean value: {1:.1f}\nMin value: {2:.1f}\n"\
+    plt.grid(True)
+   
+    plt.text(int(np.min(xs)/10)*10, (-1/np.max(ys))*25, "Maximun value: {0:.1f}\nMean value: {1:.1f}\nMin value: {2:.1f}\n"\
             .format(np.nanmax(SST[0,:,:]), np.nanmean(SST[0,:,:]), 
                     np.nanmin(SST[0,:,:])), 
             horizontalalignment='left',
             verticalalignment='top', 
             fontsize=9, style='italic', wrap=True)
-   
-    plt.text(np.nanmax(SST[0,:,:]), -0.25, "created by guitar79@gs.hs.kr\nAVHRR SST procuct using KOSC data\n{}"\
+    plt.text((int(np.max(xs)/10)+1)*10, (-1/np.max(ys))*25, "created by guitar79@gs.hs.kr\nAVHRR SST procuct using KOSC data\n{}"\
              .format(fullname_el[-1]), 
             horizontalalignment='right',
             verticalalignment='top', 
             fontsize=10, style='italic', wrap=True)  
+    #plt.text(min(xs), -0.25, "Maximun value: {0:.1f}\nMean value: {1:.1f}\nMin value: {2:.1f}\n"\
+    #        .format(np.nanmax(SST[0,:,:]), np.nanmean(SST[0,:,:]), 
+    #                np.nanmin(SST[0,:,:])), 
+    #        horizontalalignment='left',
+    #        verticalalignment='top', 
+    #        fontsize=9, style='italic', wrap=True)
+   
+    #plt.text(np.nanmax(SST[0,:,:]), -0.25, "created by guitar79@gs.hs.kr\nAVHRR SST procuct using KOSC data\n{}"\
+    #         .format(fullname_el[-1]), 
+    #        horizontalalignment='right',
+    #        verticalalignment='top', 
+    #        fontsize=10, style='italic', wrap=True)  
+    #plt.text(0, -0.25, "Maximun value: {0:.1f}\nMean value: {1:.1f}\nMin value: {2:.1f}\n"\
+    #        .format(np.nanmax(SST[0,:,:]), np.nanmean(SST[0,:,:]), 
+    #                np.nanmin(SST[0,:,:])), 
+    #        horizontalalignment='left',
+    #        verticalalignment='top', 
+    #        fontsize=9, style='italic', wrap=True)
 
     return plt
 
