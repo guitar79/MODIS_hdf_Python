@@ -162,6 +162,7 @@ for proc_date in proc_dates[:]:
 
             alldata = np.nanmean(alldata_3Ds, axis=0, keepdims=True)
             print("alldata_3Ds.shape : final\n{}".format(alldata_3Ds.shape))
+
             # alldata1 = np.nan if np.all(i!=i) else np.nanmean(i)
             print("alldata.shape :\n{}".format(alldata.shape))
             print("alldata :\n{}".format(alldata))
@@ -171,7 +172,7 @@ for proc_date in proc_dates[:]:
             print("alldata.shape :\n{}".format(alldata.shape))
             print("alldata :\n{}".format(alldata))
             ds = nc.Dataset('{0}'.format(output_fullname), 'w', format='NETCDF4')
-            
+
             #time = ds.createDimension('time', filename_el[2])
             time = ds.createDimension('time', None)
             
