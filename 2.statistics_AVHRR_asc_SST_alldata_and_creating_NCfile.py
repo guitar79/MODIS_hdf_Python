@@ -185,8 +185,8 @@ for proc_date in proc_dates[:]:
                 SST = ds.createVariable('SST', 'f4', ('time', 'latitude', 'longitude',))
                 SST.units = 'degree'
 
-                lons[:] = np.arange(Llon, Rlon+resolution, resolution)
-                lats[:] = np.arange(Slat, Nlat+resolution, resolution)
+                lons[:] = np.arange(Llon, Rlon+resolution*0.1, resolution)
+                lats[:] = np.arange(Slat, Nlat+resolution*0.1, resolution)
                 #lons[:] = np.arange(Llon, Rlon+resolution, resolution)
                 #lats[:] = np.arange(Slat, Nlat+resolution, resolution)
 
