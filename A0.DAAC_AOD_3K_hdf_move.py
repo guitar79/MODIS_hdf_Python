@@ -4,10 +4,7 @@
 
 '''
 
-
-from glob import glob
 from datetime import datetime
-import numpy as np
 import os
 import sys
 import shutil 
@@ -39,9 +36,11 @@ else :
     
 
 #set directory
-base_dir_name = "../DAAC_MOD04_3K/"
+base_dir_name = "../DAAC_MOD04_L2/"
 
-fullnames = sorted(glob(os.path.join(base_dir_name, '*.hdf')))
+#fullnames = sorted(glob(os.path.join(base_dir_name, '*.hdf')))
+
+fullnames = MODIS_hdf_utilities.getFullnameListOfallFiles(base_dir_name)
 
 len(fullnames)
     
@@ -51,24 +50,41 @@ for fullname in fullnames :
     filename_el = fullname_el[-1].split(".")
     print("Reading hdf file {0}\n".format(fullname))
     try : 
-        if filename_el[0] == "MOD04_3K" :
-            save_filename = r"../DAAC_AOD_3K/Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8], fullname_el[-1])
-            if not os.path.exists(r"../DAAC_AOD_3K/Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 3km/{}/".format(filename_el[1][1:5])) :
-                os.makedirs(r"../DAAC_AOD_3K/Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 3km/{}/".format(filename_el[1][1:5]))
-            if not os.path.exists(r"../DAAC_AOD_3K/Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8])) :
-                os.makedirs(r"../DAAC_AOD_3K/Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8]))
-            shutil.move(r"{}".format(fullname), r"{}".format(save_filename))
-            print("{} is moved to {}".format(fullname, save_filename))        
-        elif filename_el[0] == "MYD04_3K" :
-            save_filename = r"../DAAC_AOD_3K/Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8], fullname_el[-1])
-            if not os.path.exists(r"../DAAC_AOD_3K/Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 3km/{}/".format(filename_el[1][1:5])) :
-                os.makedirs(r"../DAAC_AOD_3K/Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 3km/{}/".format(filename_el[1][1:5]))
-            if not os.path.exists(r"../DAAC_AOD_3K/Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8])) :
-                os.makedirs(r"../DAAC_AOD_3K/Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8]))
-            shutil.move(r"{}".format(fullname), r"{}".format(save_filename))
-            print("{} is moved to {}".format(fullname, save_filename))
-        else :
-            print("xxxxx sonthing get weaked....")
+        if filename_el[-1] == "hdf" : 
+            if filename_el[0] == "MOD04_3K" :
+                save_filename = r"../Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8], fullname_el[-1])
+                if not os.path.exists(r"../Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 3km/{}/".format(filename_el[1][1:5])) :
+                    os.makedirs(r"../Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 3km/{}/".format(filename_el[1][1:5]))
+                if not os.path.exists(r"../Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8])) :
+                    os.makedirs(r"../Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8]))
+                shutil.move(r"{}".format(fullname), r"{}".format(save_filename))
+                print("{} is moved to {}".format(fullname, save_filename))        
+            elif filename_el[0] == "MYD04_3K" :
+                save_filename = r"../Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8], fullname_el[-1])
+                if not os.path.exists(r"../Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 3km/{}/".format(filename_el[1][1:5])) :
+                    os.makedirs(r"../Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 3km/{}/".format(filename_el[1][1:5]))
+                if not os.path.exists(r"../Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8])) :
+                    os.makedirs(r"../Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 3km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8]))
+                shutil.move(r"{}".format(fullname), r"{}".format(save_filename))
+                print("{} is moved to {}".format(fullname, save_filename))
+            elif filename_el[0] == "MOD04_L2" :
+                save_filename = r"../Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 10km/{}/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8], fullname_el[-1])
+                if not os.path.exists(r"../Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 10km/{}/".format(filename_el[1][1:5])) :
+                    os.makedirs(r"../Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 10km/{}/".format(filename_el[1][1:5]))
+                if not os.path.exists(r"../Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 10km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8])) :
+                    os.makedirs(r"../Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 10km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8]))
+                shutil.move(r"{}".format(fullname), r"{}".format(save_filename))
+                print("{} is moved to {}".format(fullname, save_filename))
+            elif filename_el[0] == "MYD04_L2" :
+                save_filename = r"../Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 10km/{}/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8], fullname_el[-1])
+                if not os.path.exists(r"../Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 10km/{}/".format(filename_el[1][1:5])) :
+                    os.makedirs(r"../Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 10km/{}/".format(filename_el[1][1:5]))
+                if not os.path.exists(r"../Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 10km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8])) :
+                    os.makedirs(r"../Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 10km/{}/{}".format(filename_el[1][1:5], filename_el[1][5:8]))
+                shutil.move(r"{}".format(fullname), r"{}".format(save_filename))
+                print("{} is moved to {}".format(fullname, save_filename))
+            else :
+                print("xxxxx sonthing get weaked....")
             
     except Exception as err :
         print("X"*60)
