@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 '''
 #############################################################
-#runfile('./classify_AVHRR_asc_SST-01.py', 'daily 0.1 2019', wdir='./MODIS_hdf_Python/')
-#cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
-#conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
-#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 1.0 2019
-#conda activate MODIS_hdf_Python_env && cd /mnt/6TB1/RS_data/MODIS_AOD/MODIS_hdf_Python/ && python A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 0.01 2000
-#conda activate MODIS_hdf_Python_env && cd /mnt/MODIS_AOD/MODIS_hdf_Python/ && python A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 0.01 2002
-#conda activate MODIS_hdf_Python_env && cd /mnt/MODIS_AOD/MODIS_hdf_Python/ && for yr in {2000..2020}; do python A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 0.01 $yr; done
+#runfile('./A1.daily_classify_from_DAAC_MOD04_3K_hdf.py', '0.1 2019', wdir='./')
+#cd '/mnt/14TB1/RS-data/KOSC/MODIS_AOD_Python' && for yr in {2011..2020}; do python classify_AVHRR_asc_SST-01.py daily 0.05 $yr; done
+#conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_AOD_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
+#conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_AOD_Python/ && A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 1.0 2019
+#conda activate MODIS_hdf_Python_env && cd /mnt/6TB1/RS_data/MODIS_AOD/MODIS_AOD_Python/ && python A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 0.01 2000
+#conda activate MODIS_hdf_Python_env && cd /mnt/MODIS_AOD/MODIS_AOD_Python/ && python A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 0.01 2002
+#conda activate MODIS_hdf_Python_env && cd /mnt/MODIS_AOD/MODIS_AOD_Python/ && for yr in {2000..2020}; do python A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 0.01 $yr; done
 '''
 
 from datetime import datetime
@@ -30,17 +30,19 @@ if arg_mode == True :
     print("argv: {}".format(argv))
 
     if len(argv) < 2 :
-        print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py 0.1 2016")
+        print ("Please input L3_perid and year \n ex) aaa.py 0.1 2016")
         sys.exit()
-    elif len(argv) > 2 :
-        print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py 0.1 2016")
+    elif len(argv) > 3 :
+        print ("Please input L3_perid and year \n ex) aaa.py 0.1 2016")
         sys.exit()
     else :
-        resolution, year = float(argv[0]), int(argv[1])
-        print("{}, {}, processing started...".format(argv[0], argv[1]))
+        resolution, year = float(argv[1]), int(argv[2])
+        #print("{}, {}, processing started...".format(argv[1], argv[2]))
 else :
-    resolution, year = 0.5, 2002
-    
+    resolution, year = 0.5, 2000
+
+print("{}, {}, processing started...".format(resolution, year))
+
 # Set Datafield name
 DATAFIELD_NAME = "Optical_Depth_Land_And_Ocean"
 
@@ -67,7 +69,7 @@ proc_dates = []
 #make processing period tuple
 from dateutil.relativedelta import relativedelta
 s_start_date = datetime(year, 1, 1) #convert startdate to date type
-s_end_date = datetime(year, 1, 1)
+s_end_date = datetime(year+1, 1, 1)
 
 k=0
 date1 = s_start_date
@@ -82,15 +84,20 @@ while date2 < s_end_date :
 
 fullnames = []
 for dirName in base_dir_names :
-    fullnames.extend(MODIS_hdf_utilities.getFullnameListOfallFiles("{}{}/".format(dirName, str(year))))
-
+    try :
+        fullnames.extend(MODIS_hdf_utilities.getFullnameListOfallFiles("{}{}/".format(dirName, str(year))))
+    except Exception as err :
+        #MODIS_hdf_utilities.write_log(err_log_file, err)
+        print(err)
+        continue
 import pandas as pd 
 df = pd.DataFrame({'fullname':fullnames})
 
 df = df[df.fullname.str.contains(".hdf")]
 
 for idx, row in df.iterrows():
-   df["fullname_dt"] = MODIS_hdf_utilities.fullname_to_datetime_for_DAAC3K(row["fullname"])   
+    print(row["fullname"])
+    df.at[idx, "fullname_dt"] = MODIS_hdf_utilities.fullname_to_datetime_for_DAAC3K(df.loc[idx, "fullname"])   
 
 df.index = df['fullname_dt']
 print("df:\n{}".format(df))
@@ -99,6 +106,8 @@ created_file_NO = 0
 #proc_date = proc_dates[0]
 for proc_date in proc_dates[:]:
     #proc_date = proc_dates[0]
+    print("Starting process data in {0} - {1} ...\n"\
+                  .format(proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d')))
     df_proc = df[(df['fullname_dt'] >= proc_date[0]) & (df['fullname_dt'] < proc_date[1])]
     
     #check file exist??
@@ -123,7 +132,7 @@ for proc_date in proc_dates[:]:
             
             print("df_proc: {}".format(df_proc))
         
-            processing_log = "#This file is created using Python : https://github.com/guitar79/MODIS_hdf_Python\n"
+            processing_log = "#This file is created using Python : https://github.com/guitar79/MODIS_AOD_Python\n"
             processing_log += "#start date = {}, end date = {}\n"\
                 .format(proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'))
     
@@ -380,4 +389,4 @@ for proc_date in proc_dates[:]:
                 '{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8} files are is created.\n{9} files are finished...' \
                 .format(save_dir_name, DATAFIELD_NAME,
                 proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
-                str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution), str(created_file_NO))
+                str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution), str(created_file_NO)))

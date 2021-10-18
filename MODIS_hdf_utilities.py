@@ -112,6 +112,7 @@ def fullname_to_datetime_for_DAAC3K(fullname):
     #for modis hdf file, filename = 'DAAC_MOD04_3K/MOD04_3K.A2014003.0105.006.2015072123557.hdf'
     #
     import calendar
+    from datetime import datetime
     fullname_el = fullname.split("/")
     filename_el = fullname_el[-1].split(".")
     y = int(filename_el[1][1:5])
@@ -120,8 +121,8 @@ def fullname_to_datetime_for_DAAC3K(fullname):
     while jd - calendar.monthrange(y, month)[1] > 0 and month <= 12:
         jd = jd - calendar.monthrange(y, month)[1]
         month += 1
-    #print("filename_el: {}".format(filename_el))
-    #print(y, month, jd, int(filename_el[2][:2]), int(filename_el[2][2:]))
+    print("filename_el: {}".format(filename_el))
+    print(y, month, jd, int(filename_el[2][:2]), int(filename_el[2][2:]))
     return datetime(y, month, jd, int(filename_el[2][:2]), int(filename_el[2][2:]))
 
 
