@@ -7,10 +7,9 @@
 #conda activate MODIS_hdf_Python_env && cd '/mnt/14TB1/RS-data/KOSC/MODIS_hdf_Python' && python classify_AVHRR_asc_SST.py daily 0.01 2011
 #conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 1.0 2019
 #conda activate MODIS_hdf_Python_env && cd /mnt/6TB1/RS_data/MODIS_AOD/MODIS_hdf_Python/ && python A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 0.01 2000
+#conda activate MODIS_hdf_Python_env && cd /mnt/MODIS_AOD/MODIS_hdf_Python/ && python A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 0.01 2002
 '''
 
-
-from glob import glob
 from datetime import datetime
 import numpy as np
 import os
@@ -18,7 +17,7 @@ import sys
 import MODIS_hdf_utilities
 
 arg_mode = True
-#arg_mode =  False
+arg_mode =  False
 
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
@@ -39,7 +38,7 @@ if arg_mode == True :
         L3_perid, resolution, year = "daily", float(argv[1]), int(argv[2])
         print("{}, {}, processing started...".format(argv[1], argv[2]))
 else :
-    L3_perid, resolution, year = "daily", 0.5, 2000
+    L3_perid, resolution, year = "daily", 0.5, 2002
     
 # Set Datafield name
 DATAFIELD_NAME = "Optical_Depth_Land_And_Ocean"
@@ -49,7 +48,9 @@ Llon, Rlon = 110, 150
 Slat, Nlat = 10, 60
 
 #set directory
-base_dir_name = "../DAAC_MOD04_3K/"
+#base_dir_name = "../DAAC_MOD04_3K/"
+base_dir_names = ["../Aerosol/MODIS Aqua C6.1 - Aerosol 5-Min L2 Swath 3km/", 
+                  "../Aerosol/MODIS Terra C6.1 - Aerosol 5-Min L2 Swath 3km/"]
 save_dir_name = "../L3_{0}/{0}_{1}_{2}_{3}_{4}_{5}_{6}/".format(DATAFIELD_NAME, str(Llon), str(Rlon),
                                                         str(Slat), str(Nlat), str(resolution), "date")
 if not os.path.exists(save_dir_name):
@@ -73,27 +74,23 @@ date2 = s_start_date
 
 while date2 < s_end_date :
     k += 1
-
     date2 = date1 + relativedelta(days=1)
-
     date = (date1, date2, k)
     proc_dates.append(date)
     date1 = date2
 
-#### make dataframe from file list
-fullnames = sorted(glob(os.path.join(base_dir_name, '*.hdf')))
-
-fullnames_dt = []
-for fullname in fullnames :
-    fullnames_dt.append(MODIS_hdf_utilities.fullname_to_datetime_for_DAAC3K(fullname))
+fullnames = []
+for dirName in base_dir_names :
+    fullnames.extend(MODIS_hdf_utilities.getFullnameListOfallFiles("{}{}/".format(dirName, str(year))))
 
 import pandas as pd 
+df = pd.DataFrame({'fullname':fullnames})
 
-len(fullnames)
-len(fullnames_dt)
+df = df[df.fullname.str.contains(".hdf")]
 
-# Calling DataFrame constructor on list 
-df = pd.DataFrame({'fullname':fullnames,'fullname_dt':fullnames_dt})
+for idx, row in df.iterrows():
+   df["fullname_dt"] = MODIS_hdf_utilities.fullname_to_datetime_for_DAAC3K(row["fullname"])   
+
 df.index = df['fullname_dt']
 print("df:\n{}".format(df))
 
