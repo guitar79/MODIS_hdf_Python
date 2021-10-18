@@ -8,6 +8,7 @@
 #conda activate MODIS_hdf_Python_env && cd /mnt/Rdata/RS-data/KOSC/MODIS_hdf_Python/ && A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 1.0 2019
 #conda activate MODIS_hdf_Python_env && cd /mnt/6TB1/RS_data/MODIS_AOD/MODIS_hdf_Python/ && python A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 0.01 2000
 #conda activate MODIS_hdf_Python_env && cd /mnt/MODIS_AOD/MODIS_hdf_Python/ && python A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 0.01 2002
+#conda activate MODIS_hdf_Python_env && cd /mnt/MODIS_AOD/MODIS_hdf_Python/ && for yr in {2000..2020}; do python A1.daily_classify_from_DAAC_MOD04_3K_hdf.py 0.01 $yr; done
 '''
 
 from datetime import datetime
@@ -17,7 +18,7 @@ import sys
 import MODIS_hdf_utilities
 
 arg_mode = True
-arg_mode =  False
+#arg_mode =  False
 
 log_file = os.path.basename(__file__)[:-3]+".log"
 err_log_file = os.path.basename(__file__)[:-3]+"_err.log"
@@ -28,17 +29,17 @@ if arg_mode == True :
     from sys import argv # input option
     print("argv: {}".format(argv))
 
-    if len(argv) < 3 :
+    if len(argv) < 2 :
         print ("len(argv) < 2\nPlease input L3_perid and year \n ex) aaa.py 0.1 2016")
         sys.exit()
-    elif len(argv) > 3 :
+    elif len(argv) > 2 :
         print ("len(argv) > 2\nPlease input L3_perid and year \n ex) aaa.py 0.1 2016")
         sys.exit()
     else :
-        L3_perid, resolution, year = "daily", float(argv[1]), int(argv[2])
-        print("{}, {}, processing started...".format(argv[1], argv[2]))
+        resolution, year = float(argv[0]), int(argv[1])
+        print("{}, {}, processing started...".format(argv[0], argv[1]))
 else :
-    L3_perid, resolution, year = "daily", 0.5, 2002
+    resolution, year = 0.5, 2002
     
 # Set Datafield name
 DATAFIELD_NAME = "Optical_Depth_Land_And_Ocean"
@@ -66,7 +67,7 @@ proc_dates = []
 #make processing period tuple
 from dateutil.relativedelta import relativedelta
 s_start_date = datetime(year, 1, 1) #convert startdate to date type
-s_end_date = datetime(year+1, 1, 1)
+s_end_date = datetime(year, 1, 1)
 
 k=0
 date1 = s_start_date
@@ -94,6 +95,7 @@ for idx, row in df.iterrows():
 df.index = df['fullname_dt']
 print("df:\n{}".format(df))
 
+created_file_NO = 0
 #proc_date = proc_dates[0]
 for proc_date in proc_dates[:]:
     #proc_date = proc_dates[0]
@@ -122,8 +124,8 @@ for proc_date in proc_dates[:]:
             print("df_proc: {}".format(df_proc))
         
             processing_log = "#This file is created using Python : https://github.com/guitar79/MODIS_hdf_Python\n"
-            processing_log += "#L3_perid = {}, start date = {}, end date = {}\n"\
-                .format(L3_perid, proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'))
+            processing_log += "#start date = {}, end date = {}\n"\
+                .format(proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'))
     
             processing_log += "#Llon = {}, Rlon = {}, Slat = {}, Nlat = {}, resolution = {}\n"\
                 .format(str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution))
@@ -131,8 +133,7 @@ for proc_date in proc_dates[:]:
             # make array_data
             print("{0}-{1} Start making grid arrays...\n".\
                   format(proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d')))
-            array_data = MODIS_hdf_utilities.make_grid_array(Llon, Rlon, Slat, Nlat, resolution)
-            
+            array_data = MODIS_hdf_utilities.make_grid_array(Llon, Rlon, Slat, Nlat, resolution)            
             print('Grid arrays are created...........\n')
         
             total_data_cnt = 0
@@ -147,10 +148,9 @@ for proc_date in proc_dates[:]:
             #fullname = df_proc["fullname"][0]
                 file_no += 1
                 fullname_el = fullname.split("/")
-                print("Reading hdf file {0}\n".format(fullname))
+                print("Reading hdf file {0}/{1} : {2}\n".format(file_no, len(df_proc["fullname"]), fullname))
             
                 try : 
-            
                     hdf_raw, latitude, longitude, cntl_pt_cols, cntl_pt_rows \
                         = MODIS_hdf_utilities.read_MODIS_hdf_to_ndarray(fullname, DATAFIELD_NAME)
                         
@@ -159,24 +159,24 @@ for proc_date in proc_dates[:]:
                     if 'bad_value_scaled' in hdf_raw.attributes() :
                         #hdf_value[hdf_value == hdf_raw.attributes()['bad_value_scaled']] = np.nan
                         hdf_value = np.where(hdf_value == hdf_raw.attributes()['bad_value_scaled'], np.nan, hdf_value)
-                        print("'bad_value_scaled' data is changed to np.nan...\n")
+                        #print("'bad_value_scaled' data is changed to np.nan...\n")
     
                     elif 'fill_value' in hdf_raw.attributes() :
                         #hdf_value[hdf_value == hdf_raw.attributes()['fill_value']] = np.nan
                         hdf_value = np.where(hdf_value == hdf_raw.attributes()['fill_value'], np.nan, hdf_value)
-                        print("'fill_value' data is changed to np.nan...\n")
+                        #print("'fill_value' data is changed to np.nan...\n")
                         
                     elif '_FillValue' in hdf_raw.attributes() :
                         #hdf_value[hdf_value == hdf_raw.attributes()['_FillValue']] = np.nan
                         hdf_value = np.where(hdf_value == hdf_raw.attributes()['_FillValue'], np.nan, hdf_value)
-                        print("'_FillValue' data is changed to np.nan...\n")\
+                        #print("'_FillValue' data is changed to np.nan...\n")\
                         
                     else :
                         #hdf_value = np.where(hdf_value == hdf_value.min(), np.nan, hdf_value)
-                        print("Minium value of hdf data is not changed to np.nan ...\n")
+                        #print("Minium value of hdf data is not changed to np.nan ...\n")
                         
                         hdf_value = np.where(hdf_value == -32767, np.nan, hdf_value)
-                        print("-32767 value of hdf data is changed to np.nan ...\n")
+                        #print("-32767 value of hdf data is changed to np.nan ...\n")
                         
                     if 'valid_range' in hdf_raw.attributes() :
                         #hdf_value[hdf_value < hdf_raw.attributes()['valid_range'][0]] = np.nan
@@ -184,7 +184,7 @@ for proc_date in proc_dates[:]:
                         
                         hdf_value = np.where(hdf_value < hdf_raw.attributes()['valid_range'][0], np.nan, hdf_value)
                         hdf_value = np.where(hdf_value > hdf_raw.attributes()['valid_range'][1], np.nan, hdf_value)
-                        print("invalid_range data changed to np.nan...\n")
+                        #print("invalid_range data changed to np.nan...\n")
                         
                     if 'scale_factor' in hdf_raw.attributes() and 'add_offset' in hdf_raw.attributes() :
                         scale_factor = hdf_raw.attributes()['scale_factor']
@@ -377,7 +377,7 @@ for proc_date in proc_dates[:]:
             
             print('#' * 60)
             MODIS_hdf_utilities.write_log(log_file,
-                '{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8} files are is created.' \
+                '{0}{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8} files are is created.\n{9} files are finished...' \
                 .format(save_dir_name, DATAFIELD_NAME,
                 proc_date[0].strftime('%Y%m%d'), proc_date[1].strftime('%Y%m%d'),
-                str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution)))
+                str(Llon), str(Rlon), str(Slat), str(Nlat), str(resolution), str(created_file_NO))
